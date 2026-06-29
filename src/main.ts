@@ -1,4 +1,12 @@
 import {validateProject} from "./validators/projectValidator";
+import {validateEnvironment} from "./validators/environmentValidator";
+import{validateUsage} from "./validators/usageValidator";
+import{scanTypeScript} from "./scanner/scanner";
+import{parseContractSpec} from "./parser/contractParser";
 import {printReport} from "./report";
-const sections = [validateProject()];
-printReport(sections);
+const projectSection = validateProject();
+const environmentSection = validateEnvironment();
+const scanResult = scanTypeScript("./examples/backend");
+const contractSpec = parseContractSpec("./examples/contract/contract-spec.json");
+const usageSection = validateUsage(contractSpec, scanResult.contractCalls);
+printReport([projectSection, environmentSection, usageSection]);
