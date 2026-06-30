@@ -11,6 +11,7 @@ export function validateProject(): ValidationSection {
     ];
 
     const items: ValidationItem[] = [];
+    try {
 
     for (const check of checks) {
         const exists = fs.existsSync(check.path);
@@ -26,4 +27,17 @@ export function validateProject(): ValidationSection {
         name: "Project Structure",
         items
     };
+} catch (error) {
+    console.error(`Error validating project structure: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return {
+        name: "Project Structure",
+        items: [
+            {
+                title: "Project Structure",
+                status: "error",
+                message: "An error occurred during validation"
+            }
+        ]
+    };
+}
 }

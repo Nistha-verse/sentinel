@@ -12,50 +12,69 @@ export function detectHorizon(scanPath: string): ValidationSection {
     let simulateDetected = false;
 
     function scanDirectory(dir: string) {
-        const entries = fs.readdirSync(dir);
+        let entries: string[];
+
+        try {
+            entries = fs.readdirSync(dir);
+        } catch (error) {
+            console.error(
+                `Unable to read directory '${dir}': ${
+                    error instanceof Error ? error.message : "Unknown error"
+                }`
+            );
+            return;
+        }
 
         for (const entry of entries) {
             const fullPath = path.join(dir, entry);
-            const stat = fs.statSync(fullPath);
+            try {
+                const stat = fs.statSync(fullPath);
 
-            if (stat.isDirectory()) {
-                scanDirectory(fullPath);
-            } else if (entry.endsWith(".ts")) {
-                const content = fs.readFileSync(fullPath, "utf-8");
+                if (stat.isDirectory()) {
+                    scanDirectory(fullPath);
+                } else if (entry.endsWith(".ts")) {
+                    const content = fs.readFileSync(fullPath, "utf-8");
 
-                // Detect Stellar SDK
-                if (
-                    content.includes("@stellar/stellar-sdk") ||
-                    content.includes("stellar-sdk")
-                ) {
-                    stellarSdkDetected = true;
+                    // Detect Stellar SDK
+                    if (
+                        content.includes("@stellar/stellar-sdk") ||
+                        content.includes("stellar-sdk")
+                    ) {
+                        stellarSdkDetected = true;
+                    }
+
+                    // Detect Horizon client
+                    if (
+                        content.includes("Horizon.Server") ||
+                        content.includes("new Horizon.Server")
+                    ) {
+                        horizonDetected = true;
+                    }
+
+                    // Detect Soroban RPC client
+                    if (
+                        content.includes("SorobanRpc.Server") ||
+                        content.includes("new SorobanRpc.Server")
+                    ) {
+                        rpcDetected = true;
+                    }
+
+                    // Detect transaction submission
+                    if (content.includes("submitTransaction")) {
+                        submitDetected = true;
+                    }
+
+                    // Detect simulation
+                    if (content.includes("simulateTransaction")) {
+                        simulateDetected = true;
+                    }
                 }
-
-                // Detect Horizon client
-                if (
-                    content.includes("Horizon.Server") ||
-                    content.includes("new Horizon.Server")
-                ) {
-                    horizonDetected = true;
-                }
-
-                // Detect Soroban RPC client
-                if (
-                    content.includes("SorobanRpc.Server") ||
-                    content.includes("new SorobanRpc.Server")
-                ) {
-                    rpcDetected = true;
-                }
-
-                // Detect transaction submission
-                if (content.includes("submitTransaction")) {
-                    submitDetected = true;
-                }
-
-                // Detect simulation
-                if (content.includes("simulateTransaction")) {
-                    simulateDetected = true;
-                }
+            } catch (error) {
+                console.error(
+                    `Skipping '${fullPath}': ${
+                        error instanceof Error ? error.message : "Unknown error"
+                    }`
+                );
             }
         }
     }
@@ -91,7 +110,7 @@ export function detectHorizon(scanPath: string): ValidationSection {
         status: submitDetected ? "success" : "warning",
         message: submitDetected
             ? "Transaction submission detected"
-            : "submitTransaction() not used"
+            : "Transaction submission not detected"
     });
 
     items.push({
@@ -99,7 +118,7 @@ export function detectHorizon(scanPath: string): ValidationSection {
         status: simulateDetected ? "success" : "info",
         message: simulateDetected
             ? "Transaction simulation detected"
-            : "simulateTransaction() not used"
+            : "Transaction simulation not detected"
     });
 
     return {

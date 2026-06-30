@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import {ValidationSection} from "../utils/types";
-import { report } from "process";
 export function generateJsonReport(reportPath: string, sections: ValidationSection[]): void {
     let errorCount = 0;
     let warningCount = 0;
@@ -33,9 +32,13 @@ export function generateJsonReport(reportPath: string, sections: ValidationSecti
                 sections: sections
             }
         };
+        try {
             if (!fs.existsSync(reportPath)) {
                 fs.mkdirSync(reportPath, { recursive: true });
             }
             fs.writeFileSync(`${reportPath}/report.json`, JSON.stringify(report, null, 2));
+        } catch (error) {
+            console.error("Error writing JSON report:", error);
+        }
     }
 }

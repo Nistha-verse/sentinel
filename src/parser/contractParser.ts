@@ -10,11 +10,21 @@ export interface ContractSpec {
 }
 
 export function parseContractSpec(filePath: string): ContractSpec {
-    const content = fs.readFileSync(filePath, "utf-8");
+    try {
+        const content = fs.readFileSync(filePath, "utf-8");
 
-    const spec = JSON.parse(content);
+        const spec = JSON.parse(content);
+        if(!Array.isArray(spec.functions)) {
+            throw new Error("Invalid contract spec: 'functions' must be an array");
+        }
 
-    return {
-        functions: spec.functions ?? []
-    };
+        return {
+            functions: spec.functions 
+        };
+    } catch (error) {
+        console.error(`Error parsing contract spec: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return {
+            functions: []
+        };
+    }
 }

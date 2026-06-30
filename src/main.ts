@@ -4,9 +4,13 @@ import{validateUsage} from "./validators/usageValidator";
 import{scanTypeScript} from "./scanner/scanner";
 import{parseContractSpec} from "./parser/contractParser";
 import {printReport} from "./report";
+try {
 const projectSection = validateProject();
 const environmentSection = validateEnvironment();
 const scanResult = scanTypeScript("./examples/backend");
 const contractSpec = parseContractSpec("./examples/contract/contract-spec.json");
 const usageSection = validateUsage(contractSpec, scanResult.contractCalls);
 printReport([projectSection, environmentSection, usageSection]);
+} catch (error) {
+    console.error("Error occurred while running the scan:", error);
+}
