@@ -1,23 +1,86 @@
 @import "tailwindcss";
+
 :root {
+  /* Brand */
   --background: #f8f6ef;
   --foreground: #163c2b;
+
   --primary: #0f5132;
-  --secondary:#e7e1d4;
-  --success:#2e7d32;
-  --warning:#f9a825;
-  --danger:#c62828;
+  --primary-foreground: #f8f6ef;
+
+  --secondary: #e7e1d4;
+  --secondary-foreground: #163c2b;
+
+  --card: #ffffff;
+  --card-foreground: #163c2b;
+
+  --border: #d6d2c8;
+  --muted: #ece7dd;
+  --muted-foreground: #5a6d63;
+
+  /* Status colors */
+  --success: #2e7d32;
+  --warning: #f9a825;
+  --danger: #c62828;
+  --info: #1976d2;
 }
-:dark{
-  --background:#0f1111;
-  --foreground:#f5f5f5;
-  --primary:#2e8b57;
-  --secondary:#1c1f1d;
-  --success:#66bb6a;
-  --warning:#fbc02d;
-  --danger:#ef5350;
+
+.dark {
+  --background: #0f1111;
+  --foreground: #f5f5f5;
+
+  --primary: #2e8b57;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1c1f1d;
+  --secondary-foreground: #f5f5f5;
+
+  --card: #181b1b;
+  --card-foreground: #f5f5f5;
+
+  --border: #2b2f2c;
+  --muted: #232826;
+  --muted-foreground: #b6bdb8;
+
+  --success: #66bb6a;
+  --warning: #fbc02d;
+  --danger: #ef5350;
+  --info: #64b5f6;
 }
-body{
-  background-color: var(--background);
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: var(--background);
   color: var(--foreground);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
