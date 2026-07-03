@@ -29,10 +29,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
-        <Link
-          href="/"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-zinc-900 transition"
-        >
+        <Link href="/dashboard" className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-zinc-900 transition">
           <LayoutDashboard size={18} />
           Dashboard
         </Link>

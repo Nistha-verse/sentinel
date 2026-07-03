@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { motion } from "framer-motion";
 import { Wallet, TerminalSquare } from "lucide-react";
@@ -31,16 +32,18 @@ export default function CTA() {
           </p>
 
           <div className="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row">
-
-            <button className="flex items-center justify-center gap-3 rounded-xl bg-emerald-500 px-8 py-4 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-600 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)]">
-              <Wallet size={22} />
-              Connect Freighter
-            </button>
-
-            <button className="flex items-center justify-center gap-3 rounded-xl border border-emerald-500 px-8 py-4 text-lg font-semibold text-emerald-400 transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_25px_rgba(16,185,129,0.25)]">
-              <TerminalSquare size={22} />
-              Import CLI Report
-            </button>
+<Link href="/wallet">
+              <button className="flex items-center gap-2 rounded-xl bg-emerald-500 px-8 py-4 text-lg font-semibold text-white transition hover:bg-emerald-600">
+                <Wallet size={22} />
+                Connect Freighter
+              </button>
+            </Link>
+            <Link href="/reports">
+              <button className="flex items-center gap-2 rounded-xl border border-zinc-700 px-8 py-4 text-lg font-semibold text-zinc-200 transition hover:border-emerald-400 hover:text-emerald-400">
+                <TerminalSquare size={22} />
+                Import  CLI Report
+              </button>
+            </Link>
 
           </div>
 

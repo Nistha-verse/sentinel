@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Bell, Moon } from "lucide-react";
 
 export default function Navbar() {
@@ -36,16 +37,17 @@ export default function Navbar() {
             <Bell size={18} />
           </button>
 
-          {/* Notification Indicator */}
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
         </div>
 
         {/* Wallet */}
-        <button
+        <Link
+          href="/wallet"
           className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
         >
           Connect Wallet
-        </button>
+        </Link>
+
       </div>
     </header>
   );

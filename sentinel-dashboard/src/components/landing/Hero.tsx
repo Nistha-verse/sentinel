@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { motion } from "framer-motion";
 import ScanAnimation from "./ScanAnimation";
@@ -52,13 +53,16 @@ export default function Hero() {
           transition={{ delay: 2.5, duration: 0.6 }}
           className="mt-12 flex flex-wrap justify-center gap-5"
         >
-          <button className="rounded-xl bg-emerald-500 px-8 py-4 text-lg font-semibold text-white transition hover:bg-emerald-600">
-            Launch Dashboard
-          </button>
-
-          <button className="rounded-xl border border-zinc-700 px-8 py-4 text-lg font-semibold text-zinc-200 transition hover:border-emerald-400 hover:text-emerald-400">
-            View Reports
-          </button>
+          <Link href="/dashboard">
+            <button className="rounded-xl bg-emerald-500 px-8 py-4 text-lg font-semibold text-white transition hover:bg-emerald-600">
+              Launch Dashboard
+            </button>
+          </Link>
+<Link href="/reports">
+            <button className="rounded-xl border border-zinc-700 px-8 py-4 text-lg font-semibold text-zinc-200 transition hover:border-emerald-400 hover:text-emerald-400">
+              View Reports
+            </button>
+          </Link>
         </motion.div>
 
       </div>
