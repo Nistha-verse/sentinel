@@ -62,3 +62,13 @@ export async function isWalletAuthorized() {
   const address = await getWalletAddress();
   return address !== null;
 }
+export async function getWalletInfo() {
+  const address = await getWalletAddress();
+  const network = await getWalletNetwork();
+
+  if (!address || !network) {
+    return null;
+  }
+
+  return { address, network };
+}
