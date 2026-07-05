@@ -10,6 +10,8 @@ import {
   Layers3,
 } from "lucide-react";
 
+import { Card, CardContent } from "@/components/ui/card";
+
 const features = [
   {
     icon: Shield,
@@ -51,69 +53,56 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="bg-[#0B0F0D] px-6 py-28">
-      <div className="mx-auto max-w-7xl">
-
+    <section className="border-t border-border bg-background py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="max-w-2xl"
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">
-            Features
-          </p>
-
-          <h2 className="mt-4 text-5xl font-bold text-white">
+          <p className="text-label text-primary">Features</p>
+          <h2 className="mt-3 text-h2 text-foreground">
             Everything you need.
-            <span className="text-emerald-400">
-              {" "}Nothing you don't.
-            </span>
+            <span className="text-text-secondary"> Nothing you don&apos;t.</span>
           </h2>
-
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-zinc-400">
-            Sentinel focuses on practical developer tooling instead of unnecessary complexity.
+          <p className="mt-4 text-body text-text-secondary">
+            Sentinel focuses on practical developer tooling instead of unnecessary
+            complexity.
           </p>
         </motion.div>
 
-        <div className="mt-20 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {
             const Icon = feature.icon;
 
             return (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{
-                  duration: 0.45,
-                  delay: index * 0.08,
-                }}
-                whileHover={{
-                  y: -6,
-                }}
-                className="group rounded-2xl border border-zinc-800 bg-zinc-900/60 p-8 transition-all hover:border-emerald-500 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+                transition={{ delay: index * 0.06, duration: 0.35 }}
               >
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/10">
-                  <Icon
-                    size={28}
-                    className="text-emerald-400 transition-transform group-hover:scale-110"
-                  />
-                </div>
+                <Card className="h-full transition-colors hover:border-primary/25 hover:bg-hover">
+                  <CardContent className="p-5">
+                    <div className="mb-4 flex size-9 items-center justify-center rounded-md border border-border bg-muted">
+                      <Icon size={16} className="text-primary" />
+                    </div>
 
-                <h3 className="text-2xl font-semibold text-white">
-                  {feature.title}
-                </h3>
+                    <h3 className="text-base font-semibold text-foreground">
+                      {feature.title}
+                    </h3>
 
-                <p className="mt-4 leading-7 text-zinc-400">
-                  {feature.description}
-                </p>
+                    <p className="mt-2 text-small leading-relaxed text-text-secondary">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
               </motion.div>
             );
           })}
         </div>
-
       </div>
     </section>
   );
