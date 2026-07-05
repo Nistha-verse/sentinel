@@ -1,95 +1,85 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  FileText,
-  Download,
-  Clock3,
-} from "lucide-react";
+import { FileText, Clock3, ArrowRight } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface ReportsCardProps {
   hasReport?: boolean;
   reportName?: string;
   generatedAt?: string;
+  healthScore?: number;
 }
 
 export default function ReportsCard({
   hasReport = false,
   reportName,
   generatedAt,
+  healthScore,
 }: ReportsCardProps) {
   return (
-    <motion.div
-      whileHover={{
-        y: -6,
-        transition: { duration: 0.2 },
-      }}
-      className="rounded-2xl border border-emerald-500/15 bg-zinc-900/70 p-6 backdrop-blur-md"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-white">
-            Validation Reports
-          </h3>
-
-          <p className="mt-1 text-sm text-zinc-500">
-            Latest CLI Output
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-emerald-500/10 p-3">
-          <FileText
-            size={26}
-            className="text-emerald-400"
-          />
-        </div>
-      </div>
-
-      <div className="mt-8">
-
-        {hasReport ? (
-          <>
-            <div className="rounded-xl bg-zinc-800 p-4">
-
-              <p className="font-medium text-white">
-                {reportName}
-              </p>
-
-              <div className="mt-3 flex items-center gap-2 text-sm text-zinc-400">
-                <Clock3 size={15} />
-                {generatedAt}
-              </div>
-
+    <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+      <Card className="h-full transition-colors hover:border-primary/20 hover:bg-hover">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-label text-muted-foreground">CLI Output</p>
+              <h3 className="mt-1 text-base font-semibold text-foreground">
+                Validation Reports
+              </h3>
             </div>
+            <div className="flex size-8 items-center justify-center rounded-md border border-border bg-muted">
+              <FileText size={15} className="text-primary" />
+            </div>
+          </div>
 
-            <button
-              className="mt-6 flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 font-semibold text-white transition hover:bg-emerald-600"
-            >
-              <Download size={18} />
-              Download Report
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="font-medium text-emerald-300">
-              No Reports Available
-            </p>
+          <div className="mt-5">
+            {hasReport ? (
+              <>
+                <div className="rounded-md border border-border bg-muted/50 p-4">
+                  <p className="text-sm font-medium text-foreground">
+                    {reportName}
+                  </p>
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock3 size={12} />
+                    {generatedAt}
+                  </div>
+                  {healthScore !== undefined && (
+                    <Badge variant="secondary" className="mt-3">
+                      Health score: {healthScore}
+                    </Badge>
+                  )}
+                </div>
 
-            <p className="mt-5 leading-7 text-zinc-400">
-              Import your first Sentinel CLI report to
-              view validation results and security findings.
-            </p>
+                <Button size="sm" className="mt-4" asChild>
+                  <Link href="/reports">
+                    View full report
+                    <ArrowRight size={14} />
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-small font-medium text-text-secondary">
+                  No reports available
+                </p>
+                <p className="mt-2 text-small leading-relaxed text-muted-foreground">
+                  Import your first Sentinel CLI report to view validation
+                  results and security findings.
+                </p>
 
-            <button
-              className="mt-6 rounded-xl border border-emerald-500 px-5 py-3 font-semibold text-emerald-400 transition hover:bg-emerald-500 hover:text-white"
-            >
-              Import Report
-            </button>
-          </>
-        )}
-
-      </div>
+                <Button variant="outline" size="sm" className="mt-4" asChild>
+                  <Link href="/reports">Import Report</Link>
+                </Button>
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }
