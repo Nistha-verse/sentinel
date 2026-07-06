@@ -64,9 +64,10 @@ function findMatchingHistory(
 
 export function enrichDiscoveredContracts(
   contracts: DiscoveredContract[],
-  history: ScanHistoryEntry[] = []
+  history: ScanHistoryEntry[] = [],
+  walletAddress: string | null = null
 ): EnrichedProject[] {
-  const stored = loadStoredReport();
+  const stored = loadStoredReport(walletAddress);
   const reportMetrics = stored?.parsed ?? null;
 
   return contracts.map((contract) => {

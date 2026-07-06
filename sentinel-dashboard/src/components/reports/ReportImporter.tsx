@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Upload, FileJson, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { useWallet } from "@/context/WalletContext";
 import { parseReportFile, ReportParseError } from "@/lib/parse-report";
 import type { ParsedReport } from "@/lib/report-types";
 import { saveReport } from "@/lib/report-storage";
@@ -24,13 +25,15 @@ export default function ReportImporter({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { address } = useWallet();
+
   const processFile = async (file: File) => {
     setError(null);
     setLoading(true);
 
     try {
       const { parsed, raw } = await parseReportFile(file);
-      saveReport(file.name, raw);
+      await saveReport(file.name, raw, address);
       onImport(parsed, file.name);
     } catch (err) {
       setError(

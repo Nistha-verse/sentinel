@@ -53,7 +53,7 @@ export function useContractDiscovery() {
 
   const runIdRef = useRef(0);
 
-  const refreshProjects = useCallback(() => {
+  const refreshProjects = useCallback(async () => {
     if (!address || !network) {
       setProjects([]);
       return;
@@ -65,8 +65,8 @@ export function useContractDiscovery() {
       return;
     }
 
-    const history = loadScanHistory();
-    setProjects(enrichDiscoveredContracts(cached.contracts, history));
+    const history = await loadScanHistory(address);
+    setProjects(enrichDiscoveredContracts(cached.contracts, history, address));
   }, [address, network]);
 
   const runDiscovery = useCallback(async () => {
@@ -110,8 +110,8 @@ export function useContractDiscovery() {
 
       saveCachedDiscovery(cache);
 
-      const history = loadScanHistory();
-      setProjects(enrichDiscoveredContracts(contracts, history));
+      const history = await loadScanHistory(address);
+      setProjects(enrichDiscoveredContracts(contracts, history, address));
       setPhase("complete");
     } catch (err) {
       if (runId !== runIdRef.current) return;
@@ -137,13 +137,13 @@ export function useContractDiscovery() {
 
     const cached = loadCachedDiscovery(address, network);
     if (cached) {
-      refreshProjects();
+      void refreshProjects();
       setPhase("complete");
       setProgress(100);
       return;
     }
 
-    runDiscovery();
+    void runDiscovery();
   }, [connected, address, network, walletLoading, runDiscovery, refreshProjects]);
 
   useEffect(() => {
