@@ -19,9 +19,10 @@ import { Progress } from "@/components/ui/progress";
 interface ReportSummaryProps {
   report: ParsedReport;
   fileName?: string;
+  walletAddress?: string;
 }
 
-export default function ReportSummary({ report, fileName }: ReportSummaryProps) {
+export default function ReportSummary({ report, fileName, walletAddress }: ReportSummaryProps) {
   const stats = [
     {
       label: "Health score",
@@ -77,6 +78,11 @@ export default function ReportSummary({ report, fileName }: ReportSummaryProps) 
             {fileName && (
               <p className="mt-1 font-mono text-xs text-muted-foreground">
                 {fileName}
+              </p>
+            )}
+            {walletAddress && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Wallet: {walletAddress}
               </p>
             )}
           </div>

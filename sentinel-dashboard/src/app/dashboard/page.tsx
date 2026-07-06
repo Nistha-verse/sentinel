@@ -9,6 +9,8 @@ import {
   AlertOctagon,
   AlertTriangle,
   Upload,
+  Clock3,
+  Layers,
 } from "lucide-react";
 
 import AppLayout from "@/components/layout/Applayout";
@@ -58,6 +60,22 @@ export default function DashboardPage() {
 
   const stats = hasReport && metrics
     ? [
+        {
+          label: "Total scans",
+          value: metrics.totalScans,
+          suffix: "",
+          icon: Clock3,
+          sub: "Reports imported for wallet",
+          accent: "text-primary",
+        },
+        {
+          label: "Monitored contracts",
+          value: metrics.totalContracts,
+          suffix: "",
+          icon: Layers,
+          sub: "Unique contract scans",
+          accent: "text-primary",
+        },
         {
           label: "Coverage",
           value: metrics.coveragePercent,

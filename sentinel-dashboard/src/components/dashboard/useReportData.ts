@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useWallet } from "@/context/WalletContext";
 import type { ParsedReport } from "@/lib/report-types";
 import {
+  loadReports,
   loadScanHistory,
   loadStoredReport,
   getHealthStatus,
@@ -23,12 +25,16 @@ export interface DashboardMetrics {
   fileName: string;
   importedAt: string;
   healthStatus: string;
+  totalScans: number;
+  totalContracts: number;
 }
 
 function buildMetrics(
   parsed: ParsedReport,
   fileName: string,
-  importedAt: string
+  importedAt: string,
+  totalScans: number,
+  totalContracts: number
 ): DashboardMetrics {
   const { summary } = parsed;
   return {
@@ -43,23 +49,39 @@ function buildMetrics(
     fileName,
     importedAt,
     healthStatus: getHealthStatus(summary.errors, summary.warnings),
+    totalScans,
+    totalContracts,
   };
 }
 
+function countUniqueContracts(entries: ScanHistoryEntry[]): number {
+  const names = new Set(entries.map((entry) => entry.contractName));
+  return names.size;
+}
+
 export function useReportData() {
+  const { address } = useWallet();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [parsed, setParsed] = useState<ParsedReport | null>(null);
   const [history, setHistory] = useState<ScanHistoryEntry[]>([]);
   const [ready, setReady] = useState(false);
 
-  const refresh = useCallback(() => {
-    const stored = loadStoredReport();
-    const scanHistory = loadScanHistory();
+  const refresh = useCallback(async () => {
+    const stored = await loadStoredReport(address);
+    const scanHistory = await loadScanHistory(address);
 
     if (stored) {
+      const totalScans = scanHistory.length;
+      const totalContracts = countUniqueContracts(scanHistory);
       setParsed(stored.parsed);
       setMetrics(
-        buildMetrics(stored.parsed, stored.fileName, stored.importedAt)
+        buildMetrics(
+          stored.parsed,
+          stored.fileName,
+          stored.importedAt,
+          totalScans,
+          totalContracts
+        )
       );
     } else {
       setParsed(null);
@@ -68,12 +90,16 @@ export function useReportData() {
 
     setHistory(scanHistory);
     setReady(true);
-  }, []);
+  }, [address]);
 
   useEffect(() => {
-    refresh();
-    window.addEventListener(REPORT_UPDATED_EVENT, refresh);
-    return () => window.removeEventListener(REPORT_UPDATED_EVENT, refresh);
+    void refresh();
+    const handleUpdate = () => {
+      void refresh();
+    };
+
+    window.addEventListener(REPORT_UPDATED_EVENT, handleUpdate);
+    return () => window.removeEventListener(REPORT_UPDATED_EVENT, handleUpdate);
   }, [refresh]);
 
   return {

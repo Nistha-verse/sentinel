@@ -1,48 +1,94 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, Trash2, Upload } from "lucide-react";
 
+import { useWallet } from "@/context/WalletContext";
 import AppLayout from "@/components/layout/Applayout";
 import ReportImporter from "@/components/reports/ReportImporter";
+import ReportHistory from "@/components/reports/ReportHistory";
 import ReportSummary from "@/components/reports/ReportSummary";
 import FindingsPanel from "@/components/reports/FindingsPanel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { LoadedReport } from "@/lib/report-storage";
 import type { ParsedReport } from "@/lib/report-types";
 import {
   clearStoredReport,
+  loadReportById,
+  loadReports,
   loadStoredReport,
 } from "@/lib/report-storage";
 import { createSampleReport } from "@/lib/parse-report";
 
 export default function ReportsPage() {
+  const { address } = useWallet();
   const [report, setReport] = useState<ParsedReport | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [reports, setReports] = useState<LoadedReport[]>([]);
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [showImporter, setShowImporter] = useState(false);
+  const [loadingReports, setLoadingReports] = useState(true);
+
+  const refreshReports = useCallback(async () => {
+    setLoadingReports(true);
+    const walletReports = await loadReports(address);
+    setReports(walletReports);
+    setSelectedReportId((current) => {
+      const exists = walletReports.some((report) => report.id === current);
+      return exists ? current : walletReports[0]?.id ?? null;
+    });
+    setLoadingReports(false);
+  }, [address]);
 
   useEffect(() => {
-    const stored = loadStoredReport();
-    if (stored) {
-      setReport(stored.parsed);
-      setFileName(stored.fileName);
+    void refreshReports();
+  }, [refreshReports]);
+
+  useEffect(() => {
+    async function loadSelectedReport() {
+      if (!selectedReportId) {
+        const latest = await loadStoredReport(address);
+        if (latest) {
+          setReport(latest.parsed);
+          setFileName(latest.fileName);
+        } else {
+          setReport(null);
+          setFileName(null);
+        }
+        return;
+      }
+
+      const selected = await loadReportById(selectedReportId, address);
+      if (selected) {
+        setReport(selected.parsed);
+        setFileName(selected.fileName);
+      }
     }
-  }, []);
 
-  const handleImport = useCallback((parsed: ParsedReport, name: string) => {
-    setReport(parsed);
-    setFileName(name);
-    setShowImporter(false);
-  }, []);
+    void loadSelectedReport();
+  }, [address, selectedReportId]);
 
-  const handleClear = () => {
-    clearStoredReport();
+  const handleImport = useCallback(
+    async (parsed: ParsedReport, name: string) => {
+      setReport(parsed);
+      setFileName(name);
+      setShowImporter(false);
+      await refreshReports();
+    },
+    [refreshReports]
+  );
+
+  const handleClear = useCallback(async () => {
+    await clearStoredReport(address);
     setReport(null);
     setFileName(null);
+    setReports([]);
+    setSelectedReportId(null);
     setShowImporter(false);
-  };
+  }, [address]);
 
   const handleDownloadSample = () => {
     const sample = createSampleReport();
@@ -56,6 +102,11 @@ export default function ReportsPage() {
     anchor.click();
     URL.revokeObjectURL(url);
   };
+
+  const selectedWalletAddress = useMemo(
+    () => address ?? "Not connected",
+    [address]
+  );
 
   return (
     <AppLayout>
@@ -97,42 +148,56 @@ export default function ReportsPage() {
           </div>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          {!report || showImporter ? (
-            <motion.div
-              key="importer"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-            >
-              <Card className="border-dashed">
-                <CardContent className="p-6">
-                  <ReportImporter onImport={handleImport} />
-                  <div className="mt-6 flex flex-wrap items-center justify-center gap-3 border-t border-border pt-6">
-                    <Button variant="outline" size="sm" onClick={handleDownloadSample}>
-                      <Download size={14} />
-                      Download sample report
-                    </Button>
-                    <Badge variant="secondary">
-                      Matches Sentinel CLI JSON format
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="report"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="space-y-8"
-            >
-              <ReportSummary report={report} fileName={fileName ?? undefined} />
-              <FindingsPanel report={report} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+          <ReportHistory
+            reports={reports}
+            selectedReportId={selectedReportId}
+            onSelect={setSelectedReportId}
+            loading={loadingReports}
+            walletAddress={selectedWalletAddress}
+          />
+
+          <AnimatePresence mode="wait">
+            {!report || showImporter ? (
+              <motion.div
+                key="importer"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+              >
+                <Card className="border-dashed">
+                  <CardContent className="p-6">
+                    <ReportImporter onImport={handleImport} />
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3 border-t border-border pt-6">
+                      <Button variant="outline" size="sm" onClick={handleDownloadSample}>
+                        <Download size={14} />
+                        Download sample report
+                      </Button>
+                      <Badge variant="secondary">
+                        Matches Sentinel CLI JSON format
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="report"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-8"
+              >
+                <ReportSummary
+                  report={report}
+                  fileName={fileName ?? undefined}
+                  walletAddress={selectedWalletAddress}
+                />
+                <FindingsPanel report={report} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </AppLayout>
   );
