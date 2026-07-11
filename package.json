@@ -1,22 +1,55 @@
 {
-  "name": "sentinel",
+  "name": "sentinel-soroban",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "ts-node src/main.ts",
-    "build": "tsc",
-    "start": "node dist/main.js"
+  "description": "Production-quality Stellar Soroban Smart Contract Security Scanner",
+  "main": "dist/main.js",
+  "bin": {
+    "sentinel": "dist/main.js"
   },
-  "keywords": [],
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/main.ts",
+    "start": "node dist/main.js",
+    "serve": "node dist/server/index.js",
+    "dev:serve": "ts-node src/server/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "smart-contract",
+    "security",
+    "scanner",
+    "audit",
+    "wasm",
+    "blockchain"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
+    "@stellar/stellar-sdk": "^16.0.1",
+    "@webassemblyjs/ast": "^1.14.1",
+    "@webassemblyjs/wasm-parser": "^1.14.1",
     "chalk": "^5.6.2",
-    "commander": "^15.0.0"
+    "cli-table3": "^0.6.5",
+    "commander": "^15.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.3",
     "@types/node": "^26.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
