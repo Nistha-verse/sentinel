@@ -7,6 +7,7 @@ import {
   FileText,
   Wallet,
   ShieldCheck,
+  ScanSearch,
   X,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/scan", label: "Scan", icon: ScanSearch },
   { href: "/reports", label: "Reports", icon: FileText },
   { href: "/wallet", label: "Wallet", icon: Wallet },
 ];

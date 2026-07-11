@@ -1,44 +1,52 @@
-import {ValidationItem, ValidationSection} from '../utils/types';
-import{ContractSpec} from "../parser/contractParser";
-export function validateUsage(contractSpec: ContractSpec, backendCalls: string[]): ValidationSection {
-    const items: ValidationItem[] = [];
-    try {
-        if(contractSpec.functions.length === 0) {
-            return {
-                name: "Function Usage",
-                items: [
-                    {
-                        title: "Function Usage",
-                        status: "info",
-                        message: "No functions found in contract"
-                    }
-                ]
-            };
-        }
-    for (const func of contractSpec.functions) {
-        const isUsed = backendCalls.includes(func.name);
-        items.push({
-            title: func.name,
-            status: isUsed ? "success" : "warning",
-            message: isUsed ? "Function is used in backend calls" : "Function exists in contract but not used in backend calls"
-        });
-    }
-    return {
-        name: "Function Usage",
-        items
-    };
-}
- catch (error) {
-    console.error(`Error validating function usage: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    return {
-        name: "Function Usage",
+import { ValidationItem, ValidationSection } from "../utils/types";
+import { ParsedContract } from "../parser/wasmParser";
+
+export function validateUsage(
+  contract: ParsedContract,
+  backendCalls: string[]
+): ValidationSection {
+  const items: ValidationItem[] = [];
+
+  try {
+    const exportedNames = contract.exports
+      .filter((e) => e.kind === "Func")
+      .map((e) => e.name);
+
+    if (exportedNames.length === 0) {
+      return {
+        name: "Contract Usage Validation",
         items: [
-            {
-                title: "Function Usage",
-                status: "error",
-                message: "An error occurred during validation"
-            }
-        ]
+          {
+            title: "Exports",
+            status: "warning",
+            message: "No exported contract methods found.",
+          },
+        ],
+      };
+    }
+
+    for (const exportedMethod of exportedNames) {
+      const used = backendCalls.includes(exportedMethod);
+      items.push({
+        title: exportedMethod,
+        status: used ? "success" : "warning",
+        message: used
+          ? "Referenced by backend."
+          : "Exported by contract but never referenced.",
+      });
+    }
+
+    return { name: "Contract Usage Validation", items };
+  } catch {
+    return {
+      name: "Contract Usage Validation",
+      items: [
+        {
+          title: "Usage Validation",
+          status: "error",
+          message: "Failed to validate contract usage.",
+        },
+      ],
     };
-}
+  }
 }
