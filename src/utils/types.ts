@@ -12,11 +12,13 @@ export interface ValidationSection {
 }
 
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
+export type Confidence = "high" | "medium" | "low";
 
 export interface Finding {
   detector: string;
   title: string;
   severity: Severity;
+  confidence: Confidence;
   description: string;
   recommendation: string;
   evidence?: string;

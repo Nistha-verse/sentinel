@@ -1,0 +1,151 @@
+{
+  "contractId": "CAV4ZMQ2LK6WKNRF3S6OXXIKG64EKSJ6WQYALLCQEIN7YGWZFB7BUYIE",
+  "contractName": "Contract CAV4ZMQ2",
+  "network": "testnet",
+  "wasmHash": "a1678b6b476ad5561ccadba829fa16b2c5791e80f231f3dac4fd052e08fac26f",
+  "riskScore": 21,
+  "critical": 0,
+  "high": 1,
+  "medium": 1,
+  "low": 7,
+  "timestamp": "2026-07-11T21:09:07.878Z",
+  "scannedBy": "sentinel",
+  "findings": [
+    {
+      "detector": "metadata",
+      "title": "Contract Overview",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Total functions: 12 (8 exported, 4 internal). Imports: 14. Total instructions: 595. Storage writers: 0, readers: 7. Functions with auth: 0.",
+      "recommendation": "Review contract structure for completeness.",
+      "evidence": "WASM size: 2680 bytes"
+    },
+    {
+      "detector": "metadata",
+      "title": "Exported Functions",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Public entrypoints (8): admin_emergency_withdraw, cancel, debug_reset_state, deposit, get_status, initialize, refund, release",
+      "recommendation": "Verify all exported functions are intentionally public.",
+      "evidence": "8 function exports"
+    },
+    {
+      "detector": "export",
+      "title": "Suspicious Export Name",
+      "severity": "high",
+      "confidence": "medium",
+      "description": "Export 'debug_reset_state' has a name suggesting it may be a debug, test, or backdoor function that should not be publicly accessible in production.",
+      "recommendation": "Remove debug/test functions before deploying to mainnet. Ensure no development backdoors are left in production contracts.",
+      "evidence": "Export name 'debug_reset_state' matches suspicious pattern",
+      "affectedFunction": "debug_reset_state"
+    },
+    {
+      "detector": "host-function",
+      "title": "Soroban Host Function Summary",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Contract uses 14 Soroban host function(s) across 6 namespace(s): memory(3), integer(3), buffer(2), ledger(4), crypto(1), cross_contract(1)",
+      "recommendation": "Review all host function imports for intended usage.",
+      "evidence": "m._, m.0, i.6, m.1, i.8, i.7, b.8, l.0, l.1, l._, l.2, b.3, c._, x.0"
+    },
+    {
+      "detector": "host-function",
+      "title": "Cryptographic Host Functions Used",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Contract uses 1 cryptographic host function(s): c._. Verify cryptographic operations are used correctly.",
+      "recommendation": "Ensure hash functions are used for integrity, not as a substitute for authorization. Verify signature verification uses the correct key.",
+      "evidence": "c._"
+    },
+    {
+      "detector": "auth",
+      "title": "Sensitive Function Without Authorization",
+      "severity": "medium",
+      "confidence": "low",
+      "description": "Exported function 'admin_emergency_withdraw' has a privilege-sensitive name but no authorization check was detected in its call chain.",
+      "recommendation": "Verify that this function enforces caller authorization before executing.",
+      "evidence": "Function name matches sensitive pattern: 'admin_emergency_withdraw'",
+      "affectedFunction": "admin_emergency_withdraw"
+    },
+    {
+      "detector": "cross-contract",
+      "title": "Cross-Contract Call Detected",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Function 'refund' invokes an external contract. Verify the callee is trusted and call arguments are validated.",
+      "recommendation": "Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.",
+      "evidence": "invoke_contract (x.0/x.1) detected, count: 1",
+      "affectedFunction": "refund"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'admin_emergency_withdraw' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'admin_emergency_withdraw' (index 17)",
+      "affectedFunction": "admin_emergency_withdraw"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'cancel' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'cancel' (index 18)",
+      "affectedFunction": "cancel"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'deposit' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'deposit' (index 20)",
+      "affectedFunction": "deposit"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'get_status' contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "2 unreachable opcode(s) in 'get_status' (index 21)",
+      "affectedFunction": "get_status"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'initialize' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'initialize' (index 22)",
+      "affectedFunction": "initialize"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'refund' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'refund' (index 23)",
+      "affectedFunction": "refund"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'release' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'release' (index 24)",
+      "affectedFunction": "release"
+    }
+  ]
+}

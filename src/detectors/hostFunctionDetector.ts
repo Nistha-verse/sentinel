@@ -23,6 +23,7 @@ export class HostFunctionDetector implements IDetector {
         detector: this.meta.id,
         title: "No Soroban Host Functions Detected",
         severity: "info",
+        confidence: "high",
         description:
           "No recognized Soroban host function imports were found. " +
           "This may indicate a non-Soroban WASM or a heavily optimized contract.",
@@ -32,7 +33,6 @@ export class HostFunctionDetector implements IDetector {
       return findings;
     }
 
-    // Summarize host function categories
     const categories = new Map<string, number>();
     for (const imp of sorobanImports) {
       categories.set(imp.category, (categories.get(imp.category) ?? 0) + 1);
@@ -42,6 +42,7 @@ export class HostFunctionDetector implements IDetector {
       detector: this.meta.id,
       title: "Soroban Host Function Summary",
       severity: "info",
+      confidence: "high",
       description:
         `Contract uses ${sorobanImports.length} Soroban host function(s) across ` +
         `${categories.size} namespace(s): ` +
@@ -52,13 +53,13 @@ export class HostFunctionDetector implements IDetector {
       evidence: sorobanImports.map((i) => i.key).join(", "),
     });
 
-    // Flag: crypto host functions (potential misuse)
     const cryptoImports = sorobanImports.filter((imp) => imp.module === "c");
     if (cryptoImports.length > 0) {
       findings.push({
         detector: this.meta.id,
         title: "Cryptographic Host Functions Used",
         severity: "info",
+        confidence: "high",
         description:
           `Contract uses ${cryptoImports.length} cryptographic host function(s): ` +
           cryptoImports.map((i) => i.key).join(", ") +
@@ -70,10 +71,8 @@ export class HostFunctionDetector implements IDetector {
       });
     }
 
-    // Flag: event emission without auth (silent operations)
     const eventImports = sorobanImports.filter((imp) => imp.module === "e");
     if (eventImports.length > 0) {
-      // Check if any function emits events without auth
       const exportNames = new Map<number, string>();
       for (const exp of contract.exports) {
         if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
@@ -92,6 +91,7 @@ export class HostFunctionDetector implements IDetector {
             detector: this.meta.id,
             title: "Event Emission Without Authorization",
             severity: "low",
+            confidence: "low",
             description:
               `Function '${label}' emits contract events without an authorization check. ` +
               `Unauthorized event emission can be used to spam the event log or ` +
@@ -102,7 +102,7 @@ export class HostFunctionDetector implements IDetector {
             evidence: `Event host function call in '${label}' without auth`,
             affectedFunction: label,
           });
-          break; // one finding per contract is sufficient
+          break;
         }
       }
     }
