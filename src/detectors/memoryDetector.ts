@@ -13,27 +13,28 @@ export class MemoryDetector implements IDetector {
   run(contract: ParsedContract): Finding[] {
     const findings: Finding[] = [];
 
-    // Exported memory
+    // Exported memory is standard and required by the Soroban ABI for host-guest
+    // data exchange. Flag as info only — not a vulnerability.
     const memoryExport = contract.exports.find(
       (e) => e.name === "memory" && e.kind === "Mem"
     );
     if (memoryExport) {
       findings.push({
         detector: this.meta.id,
-        title: "Linear Memory Exported",
-        severity: "medium",
+        title: "Linear Memory Exported (Standard Soroban ABI)",
+        severity: "info",
+        confidence: "high",
         description:
           "The contract exports its linear memory section. " +
-          "While standard in Soroban contracts for host-guest data exchange, " +
-          "exported memory exposes the contract's entire memory space to the host.",
+          "This is required by the Soroban host ABI for host-guest data exchange " +
+          "and is present in all standard Soroban contracts.",
         recommendation:
-          "Verify that memory export is required by the Soroban ABI. " +
-          "Ensure no sensitive data (keys, secrets) is stored in linear memory.",
+          "No action required. Ensure no sensitive data (private keys, secrets) " +
+          "is stored in linear memory at rest.",
         evidence: "Export 'memory' of kind Mem found",
       });
     }
 
-    // memory.grow operations
     const exportNames = new Map<number, string>();
     for (const exp of contract.exports) {
       if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
@@ -46,6 +47,7 @@ export class MemoryDetector implements IDetector {
         detector: this.meta.id,
         title: "Dynamic Memory Growth Detected",
         severity: "low",
+        confidence: "high",
         description:
           `Function '${label}' uses the memory.grow instruction to dynamically ` +
           `expand linear memory. Unbounded memory growth can exhaust resources ` +

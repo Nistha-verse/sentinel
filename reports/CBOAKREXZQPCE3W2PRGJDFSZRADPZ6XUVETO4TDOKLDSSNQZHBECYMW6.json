@@ -1,0 +1,141 @@
+{
+  "contractId": "CBOAKREXZQPCE3W2PRGJDFSZRADPZ6XUVETO4TDOKLDSSNQZHBECYMW6",
+  "contractName": "Contract CBOAKREX",
+  "network": "testnet",
+  "wasmHash": "3a7360268ada4caf0a8a8cdc39500850b7a96ea6804235e84c2620eb78a22366",
+  "riskScore": 5,
+  "critical": 0,
+  "high": 0,
+  "medium": 0,
+  "low": 6,
+  "timestamp": "2026-07-11T21:08:31.433Z",
+  "scannedBy": "sentinel",
+  "findings": [
+    {
+      "detector": "metadata",
+      "title": "Contract Overview",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Total functions: 11 (6 exported, 5 internal). Imports: 15. Total instructions: 749. Storage writers: 0, readers: 6. Functions with auth: 0.",
+      "recommendation": "Review contract structure for completeness.",
+      "evidence": "WASM size: 2916 bytes"
+    },
+    {
+      "detector": "metadata",
+      "title": "Exported Functions",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Public entrypoints (6): cancel, deposit, get_status, initialize, refund, release",
+      "recommendation": "Verify all exported functions are intentionally public.",
+      "evidence": "6 function exports"
+    },
+    {
+      "detector": "host-function",
+      "title": "Soroban Host Function Summary",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Contract uses 15 Soroban host function(s) across 6 namespace(s): memory(3), integer(5), buffer(2), ledger(3), cross_contract(1), crypto(1)",
+      "recommendation": "Review all host function imports for intended usage.",
+      "evidence": "m._, m.0, i.6, m.1, i.8, i.7, b.8, l.0, l.1, x.0, l._, i.0, i._, b.3, c._"
+    },
+    {
+      "detector": "host-function",
+      "title": "Cryptographic Host Functions Used",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Contract uses 1 cryptographic host function(s): c._. Verify cryptographic operations are used correctly.",
+      "recommendation": "Ensure hash functions are used for integrity, not as a substitute for authorization. Verify signature verification uses the correct key.",
+      "evidence": "c._"
+    },
+    {
+      "detector": "cross-contract",
+      "title": "Cross-Contract Call Detected",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Function 'cancel' invokes an external contract. Verify the callee is trusted and call arguments are validated.",
+      "recommendation": "Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.",
+      "evidence": "invoke_contract (x.0/x.1) detected, count: 1",
+      "affectedFunction": "cancel"
+    },
+    {
+      "detector": "cross-contract",
+      "title": "Cross-Contract Call Detected",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Function 'refund' invokes an external contract. Verify the callee is trusted and call arguments are validated.",
+      "recommendation": "Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.",
+      "evidence": "invoke_contract (x.0/x.1) detected, count: 2",
+      "affectedFunction": "refund"
+    },
+    {
+      "detector": "cross-contract",
+      "title": "Cross-Contract Call Detected",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Function 'release' invokes an external contract. Verify the callee is trusted and call arguments are validated.",
+      "recommendation": "Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.",
+      "evidence": "invoke_contract (x.0/x.1) detected, count: 1",
+      "affectedFunction": "release"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'cancel' contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "2 unreachable opcode(s) in 'cancel' (index 18)",
+      "affectedFunction": "cancel"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'deposit' contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "2 unreachable opcode(s) in 'deposit' (index 20)",
+      "affectedFunction": "deposit"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'get_status' contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "2 unreachable opcode(s) in 'get_status' (index 21)",
+      "affectedFunction": "get_status"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'initialize' contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "1 unreachable opcode(s) in 'initialize' (index 22)",
+      "affectedFunction": "initialize"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'refund' contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "2 unreachable opcode(s) in 'refund' (index 23)",
+      "affectedFunction": "refund"
+    },
+    {
+      "detector": "panic",
+      "title": "Compiler Overflow Check in Exported Function",
+      "severity": "low",
+      "confidence": "low",
+      "description": "Exported function 'release' contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.",
+      "recommendation": "Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.",
+      "evidence": "2 unreachable opcode(s) in 'release' (index 24)",
+      "affectedFunction": "release"
+    }
+  ]
+}

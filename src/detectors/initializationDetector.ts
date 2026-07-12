@@ -2,6 +2,9 @@ import type { IDetector, DetectorMeta } from "./IDetector";
 import type { ParsedContract } from "../parser/wasmParser";
 import type { Finding } from "../utils/types";
 
+const INIT_PATTERN = /^(initialize|init|setup|constructor)/i;
+const RUNTIME_EXPORTS = new Set(["memory", "__data_end", "__heap_base", "_"]);
+
 export class InitializationDetector implements IDetector {
   readonly meta: DetectorMeta = {
     id: "initialization",
@@ -13,9 +16,6 @@ export class InitializationDetector implements IDetector {
   run(contract: ParsedContract): Finding[] {
     const findings: Finding[] = [];
 
-    const INIT_PATTERN = /^(initialize|init|setup|constructor)/i;
-    const RUNTIME_EXPORTS = new Set(["memory", "__data_end", "__heap_base", "_"]);
-
     const exportNames = new Map<number, string>();
     for (const exp of contract.exports) {
       if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
@@ -26,16 +26,11 @@ export class InitializationDetector implements IDetector {
       if (!exportName || RUNTIME_EXPORTS.has(exportName)) continue;
       if (!INIT_PATTERN.test(exportName)) continue;
 
-      // Check for existence check (has/get) before write
       const hasExistenceCheck = fn.instructions.some((instr) => {
         if (instr.id !== "call" || instr.operand === undefined) return false;
         const imp = contract.imports[instr.operand];
         if (!imp) return false;
-        // l._ = has, l.0 = get — both indicate an existence/read check
-        return (
-          (imp.module === "l" || imp.module === "d") &&
-          (imp.name === "_" || imp.name === "0")
-        );
+        return imp.module === "d" && (imp.name === "_" || imp.name === "0");
       });
 
       if (!hasExistenceCheck && fn.hasLedgerWrite) {
@@ -43,6 +38,7 @@ export class InitializationDetector implements IDetector {
           detector: this.meta.id,
           title: "Re-Initialization Vulnerability",
           severity: "critical",
+          confidence: "high",
           description:
             `Initialization function '${exportName}' does not check whether the ` +
             `contract has already been initialized before writing state. ` +
@@ -54,7 +50,7 @@ export class InitializationDetector implements IDetector {
             "      panic!(\"Contract already initialized\");\n" +
             "  }\n" +
             "  env.storage().instance().set(&DataKey::Initialized, &true);",
-          evidence: `No storage existence check (has/get) before first write in '${exportName}'`,
+          evidence: `No storage existence check (d._ / d.0) before first write (d.1) in '${exportName}'`,
           affectedFunction: exportName,
         });
       }

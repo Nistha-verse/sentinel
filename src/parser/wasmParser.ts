@@ -31,8 +31,17 @@ export const SOROBAN_NAMESPACES: Record<string, string> = {
 };
 
 export const AUTH_IMPORT_PATTERN = /^a\./;
-export const LEDGER_WRITE_PATTERN = /^[ld]\./;
 export const CROSS_CONTRACT_PATTERN = /^x\./;
+
+// Soroban contract_data (d.*) host function semantics:
+//   "0" = get (read), "_" = has (existence check) → reads
+//   "1" = set/put (write), "2" = del/remove (write) → writes
+// The l.* namespace is ledger info (sequence, timestamp) — always read-only.
+export const DATA_WRITE_NAMES = new Set(["1", "2"]);
+export const DATA_READ_NAMES = new Set(["0", "_"]);
+
+// invoke_contract (x.0 = call, x.1 = try_call) — genuine cross-contract invocation
+export const INVOKE_CONTRACT_NAMES = new Set(["0", "1"]);
 
 // ─── Domain types ─────────────────────────────────────────────────────────────
 
@@ -63,10 +72,12 @@ export interface FunctionInfo {
   hasLoop: boolean;
   loopDepth: number;
   hasUnreachable: boolean;
+  unreachableCount: number;
   hasCrossContractCall: boolean;
+  invokeContractCount: number; // genuine invoke_contract (x.0/x.1) calls
   hasAuthCall: boolean;
-  hasLedgerWrite: boolean;
-  hasLedgerRead: boolean;
+  hasLedgerWrite: boolean; // true only for d.1 / d.2 (set/del)
+  hasLedgerRead: boolean;  // true for d.0 / d._ / l.*
   hasCallIndirect: boolean;
   hasMemoryGrow: boolean;
 }
@@ -83,24 +94,6 @@ export interface ParsedContract {
 }
 
 // ─── AST node shapes as seen at runtime ──────────────────────────────────────
-// @webassemblyjs stores call targets in node.index, not node.args[0]
-interface RuntimeCallInstr {
-  id: "call";
-  index?: { value: number };
-  args?: Array<{ value?: number }>;
-}
-
-interface RuntimeBlockInstr {
-  id: "block" | "loop";
-  instr?: RuntimeInstr[];
-}
-
-interface RuntimeIfInstr {
-  id: "if";
-  consequent?: RuntimeInstr[];
-  alternate?: RuntimeInstr[];
-}
-
 interface RuntimeInstr {
   id: string;
   index?: { value: number };
@@ -121,14 +114,12 @@ function flattenInstructions(bodyValues: RuntimeInstr[]): InstructionRecord[] {
 
       const rec: InstructionRecord = { id: instr.id };
 
-      // call uses node.index.value (CallInstruction shape)
       if (instr.id === "call" && instr.index !== undefined) {
         rec.operand = instr.index.value;
       }
 
       result.push(rec);
 
-      // Recurse into block/loop bodies (stored in node.instr)
       if ((instr.id === "block" || instr.id === "loop") && Array.isArray(instr.instr)) {
         walk(instr.instr);
       } else if (instr.id === "if") {
@@ -207,8 +198,6 @@ export function parseWasm(filePath: string): ParsedContract {
   const rawFuncs: Array<{ name: string; body: RuntimeInstr[] }> = [];
   const customSections: CustomSection[] = [];
 
-  // ── Collect custom sections directly from AST module fields ───────────────
-  // traverse() does not support CustomSection as a visitor key at runtime
   for (const wasmModule of ast.body) {
     for (const field of wasmModule.fields) {
       if (field.type === "CustomSection") {
@@ -217,7 +206,6 @@ export function parseWasm(filePath: string): ParsedContract {
     }
   }
 
-  // ── Traverse: imports, exports, functions ─────────────────────────────────
   traverse(ast, {
     ModuleImport(p: { node: ModuleImport }) {
       const node = p.node;
@@ -248,7 +236,6 @@ export function parseWasm(filePath: string): ParsedContract {
       const node = p.node;
       if (node.isExternal) return;
       const name = node.name?.value ?? `func_${imports.length + rawFuncs.length}`;
-      // body is an array-like object with numeric keys — use Object.values()
       const body = node.body
         ? (Object.values(node.body) as RuntimeInstr[])
         : [];
@@ -258,7 +245,6 @@ export function parseWasm(filePath: string): ParsedContract {
 
   const importFuncCount = imports.length;
 
-  // ── Build FunctionInfo with instruction analysis ───────────────────────────
   const functions: FunctionInfo[] = rawFuncs.map((raw, localIdx) => {
     const index = importFuncCount + localIdx;
     const instructions = flattenInstructions(raw.body);
@@ -266,7 +252,9 @@ export function parseWasm(filePath: string): ParsedContract {
 
     let hasLoop = false;
     let hasUnreachable = false;
+    let unreachableCount = 0;
     let hasCrossContractCall = false;
+    let invokeContractCount = 0;
     let hasAuthCall = false;
     let hasLedgerWrite = false;
     let hasLedgerRead = false;
@@ -280,6 +268,7 @@ export function parseWasm(filePath: string): ParsedContract {
           break;
         case "unreachable":
           hasUnreachable = true;
+          unreachableCount++;
           break;
         case "call_indirect":
           hasCallIndirect = true;
@@ -292,12 +281,23 @@ export function parseWasm(filePath: string): ParsedContract {
             callTargets.add(instr.operand);
             const imp = imports[instr.operand];
             if (imp) {
-              if (AUTH_IMPORT_PATTERN.test(imp.key)) hasAuthCall = true;
-              if (CROSS_CONTRACT_PATTERN.test(imp.key)) hasCrossContractCall = true;
-              if (LEDGER_WRITE_PATTERN.test(imp.key)) {
-                hasLedgerWrite = true;
-                hasLedgerRead = true;
+              // Auth: a.* namespace
+              if (imp.module === "a") hasAuthCall = true;
+
+              // Cross-contract: x.* namespace
+              if (imp.module === "x") {
+                hasCrossContractCall = true;
+                if (INVOKE_CONTRACT_NAMES.has(imp.name)) invokeContractCount++;
               }
+
+              // Contract data storage: d.* — distinguish reads from writes
+              if (imp.module === "d") {
+                if (DATA_WRITE_NAMES.has(imp.name)) hasLedgerWrite = true;
+                if (DATA_READ_NAMES.has(imp.name)) hasLedgerRead = true;
+              }
+
+              // Ledger info (l.*) — read-only (sequence number, timestamp, etc.)
+              if (imp.module === "l") hasLedgerRead = true;
             }
           }
           break;
@@ -314,7 +314,9 @@ export function parseWasm(filePath: string): ParsedContract {
       hasLoop,
       loopDepth,
       hasUnreachable,
+      unreachableCount,
       hasCrossContractCall,
+      invokeContractCount,
       hasAuthCall,
       hasLedgerWrite,
       hasLedgerRead,
@@ -323,13 +325,12 @@ export function parseWasm(filePath: string): ParsedContract {
     };
   });
 
-  // ── Build call graph ───────────────────────────────────────────────────────
   const callGraph = new Map<number, Set<number>>();
   for (const fn of functions) {
     callGraph.set(fn.index, fn.callTargets);
   }
 
-  // ── Propagate flags through call graph (2 passes) ─────────────────────────
+  // Propagate flags through call graph (2 passes for transitive calls)
   for (let pass = 0; pass < 2; pass++) {
     for (const fn of functions) {
       for (const target of fn.callTargets) {
@@ -339,6 +340,7 @@ export function parseWasm(filePath: string): ParsedContract {
         if (callee.hasLedgerWrite) fn.hasLedgerWrite = true;
         if (callee.hasLedgerRead) fn.hasLedgerRead = true;
         if (callee.hasCrossContractCall) fn.hasCrossContractCall = true;
+        if (callee.invokeContractCount > 0) fn.invokeContractCount += callee.invokeContractCount;
       }
     }
   }

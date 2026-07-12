@@ -15,7 +15,6 @@ export class LoopDetector implements IDetector {
   run(contract: ParsedContract): Finding[] {
     const findings: Finding[] = [];
 
-    // Build export name lookup
     const exportNames = new Map<number, string>();
     for (const exp of contract.exports) {
       if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
@@ -26,8 +25,6 @@ export class LoopDetector implements IDetector {
 
       const label = exportNames.get(fn.index) ?? fn.name;
 
-      // Check for unbounded loop: a loop block without a br_if targeting exit
-      // We detect this by checking if the function has a loop but no br_if instruction
       const hasBrIf = fn.instructions.some((i) => i.id === "br_if");
       const hasReturn = fn.instructions.some((i) => i.id === "return");
 
@@ -36,6 +33,7 @@ export class LoopDetector implements IDetector {
           detector: this.meta.id,
           title: "Potentially Unbounded Loop",
           severity: "high",
+          confidence: "medium",
           description:
             `Function '${label}' contains a loop block with no conditional branch (br_if) ` +
             `or return instruction detected. This may represent an unbounded loop that ` +
@@ -51,6 +49,7 @@ export class LoopDetector implements IDetector {
           detector: this.meta.id,
           title: "Deeply Nested Loop",
           severity: "medium",
+          confidence: "medium",
           description:
             `Function '${label}' has a loop nesting depth of ${fn.loopDepth}. ` +
             `Deeply nested loops multiply instruction consumption and may exhaust ` +

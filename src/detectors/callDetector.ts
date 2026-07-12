@@ -18,7 +18,6 @@ export class CallDetector implements IDetector {
       if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
     }
 
-    // call_indirect detection
     for (const fn of contract.functions) {
       if (!fn.hasCallIndirect) continue;
       const label = exportNames.get(fn.index) ?? fn.name;
@@ -26,6 +25,7 @@ export class CallDetector implements IDetector {
         detector: this.meta.id,
         title: "Dynamic Dispatch (call_indirect) Detected",
         severity: "medium",
+        confidence: "medium",
         description:
           `Function '${label}' uses call_indirect for dynamic function dispatch. ` +
           `If the function table can be manipulated, this could redirect execution ` +
@@ -38,7 +38,6 @@ export class CallDetector implements IDetector {
       });
     }
 
-    // Recursion detection via call graph cycle detection (DFS)
     const recursive = this.findRecursiveFunctions(contract.callGraph);
     for (const funcIndex of recursive) {
       const fn = contract.functions.find((f) => f.index === funcIndex);
@@ -48,6 +47,7 @@ export class CallDetector implements IDetector {
         detector: this.meta.id,
         title: "Recursive Function Detected",
         severity: "medium",
+        confidence: "high",
         description:
           `Function '${label}' is part of a recursive call cycle. ` +
           `Recursion in Soroban contracts can exhaust the call stack and ` +

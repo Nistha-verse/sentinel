@@ -2,6 +2,8 @@ import type { IDetector, DetectorMeta } from "./IDetector";
 import type { ParsedContract } from "../parser/wasmParser";
 import type { Finding } from "../utils/types";
 
+const UPGRADE_FUNC_PATTERN = /^(upgrade|update|migrate|set_wasm)/i;
+
 export class UpgradeDetector implements IDetector {
   readonly meta: DetectorMeta = {
     id: "upgrade",
@@ -13,8 +15,7 @@ export class UpgradeDetector implements IDetector {
   run(contract: ParsedContract): Finding[] {
     const findings: Finding[] = [];
 
-    // Soroban upgrade host function: e.* namespace (events/env)
-    // update_current_contract_wasm is in the 'e' namespace
+    // update_current_contract_wasm is in the 'e' (events/env) or 'n' (context) namespace
     const upgradeImports = contract.imports.filter(
       (imp) => imp.module === "e" || imp.module === "n"
     );
@@ -25,8 +26,6 @@ export class UpgradeDetector implements IDetector {
     for (const exp of contract.exports) {
       if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
     }
-
-    const UPGRADE_FUNC_PATTERN = /^(upgrade|update|migrate|set_wasm)/i;
 
     for (const fn of contract.functions) {
       const callsUpgrade = fn.instructions.some(
@@ -46,24 +45,25 @@ export class UpgradeDetector implements IDetector {
           detector: this.meta.id,
           title: "Contract Upgrade Without Authorization",
           severity: "critical",
+          confidence: "high",
           description:
             `Function '${label}' calls a contract upgrade host function ` +
             `but no authorization check (require_auth) was detected in its call chain. ` +
             `Any caller could upgrade the contract to arbitrary WASM code.`,
           recommendation:
             "Add env.require_auth(&admin) before any upgrade operation. " +
-            "Verify the caller is the designated admin/owner stored in contract state.",
+            "Verify the caller is the designated admin stored in contract state.",
           evidence: `Upgrade host function call detected without auth in '${label}'`,
           affectedFunction: label,
         });
       }
 
-      // Flag upgrade functions that are publicly exported
       if (exportName && !UPGRADE_FUNC_PATTERN.test(exportName)) {
         findings.push({
           detector: this.meta.id,
           title: "Upgrade Capability in Non-Upgrade Function",
           severity: "high",
+          confidence: "medium",
           description:
             `Function '${exportName}' performs a contract upgrade but its name ` +
             `does not indicate upgrade intent. This may be an obfuscated upgrade path.`,

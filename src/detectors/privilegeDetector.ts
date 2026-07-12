@@ -2,6 +2,9 @@ import type { IDetector, DetectorMeta } from "./IDetector";
 import type { ParsedContract } from "../parser/wasmParser";
 import type { Finding } from "../utils/types";
 
+const ADMIN_PATTERN = /^(set_admin|transfer_admin|set_owner|transfer_ownership|change_admin)/i;
+const RUNTIME_EXPORTS = new Set(["memory", "__data_end", "__heap_base", "_"]);
+
 export class PrivilegeDetector implements IDetector {
   readonly meta: DetectorMeta = {
     id: "privilege",
@@ -18,19 +21,16 @@ export class PrivilegeDetector implements IDetector {
       if (exp.funcIndex !== null) exportNames.set(exp.funcIndex, exp.name);
     }
 
-    const ADMIN_PATTERN = /^(set_admin|transfer_admin|set_owner|transfer_ownership|change_admin)/i;
-    const RUNTIME_EXPORTS = new Set(["memory", "__data_end", "__heap_base", "_"]);
-
     for (const fn of contract.functions) {
       const exportName = exportNames.get(fn.index);
       if (!exportName || RUNTIME_EXPORTS.has(exportName)) continue;
 
-      // Admin transfer without auth
       if (ADMIN_PATTERN.test(exportName) && !fn.hasAuthCall) {
         findings.push({
           detector: this.meta.id,
           title: "Admin Transfer Without Authorization",
           severity: "critical",
+          confidence: "high",
           description:
             `Function '${exportName}' appears to transfer admin/ownership privileges ` +
             `but no authorization check was detected. Any caller could take over ` +
@@ -43,13 +43,12 @@ export class PrivilegeDetector implements IDetector {
         });
       }
 
-      // Admin setter that writes storage without reading current admin first
-      // (potential privilege escalation: set admin before one is established)
       if (ADMIN_PATTERN.test(exportName) && fn.hasLedgerWrite && !fn.hasLedgerRead) {
         findings.push({
           detector: this.meta.id,
           title: "Admin Set Without Existing Admin Check",
           severity: "high",
+          confidence: "medium",
           description:
             `Function '${exportName}' writes an admin/owner address to storage ` +
             `without reading the current admin first. If called before initialization, ` +

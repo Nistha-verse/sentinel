@@ -33,24 +33,39 @@ function severityBg(severity: Severity): string {
 }
 
 function riskGaugeColor(score: number): string {
-  if (score >= 70) return "#ef4444";
-  if (score >= 35) return "#f97316";
-  if (score >= 10) return "#eab308";
+  if (score >= 80) return "#ef4444";
+  if (score >= 60) return "#f97316";
+  if (score >= 40) return "#eab308";
+  if (score >= 20) return "#3b82f6";
   return "#22c55e";
+}
+
+function confidenceColor(confidence: string): string {
+  switch (confidence) {
+    case "high":   return "#166534";
+    case "medium": return "#92400e";
+    case "low":    return "#1e40af";
+    default:       return "#374151";
+  }
 }
 
 function renderFinding(finding: Finding, index: number): string {
   const color = severityColor(finding.severity);
   const bg = severityBg(finding.severity);
+  const conf = finding.confidence ?? "medium";
   return `
     <div class="finding" style="border-left: 4px solid ${color}; background: ${bg}; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
         <span style="background:${color}; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
           ${escapeHtml(finding.severity)}
+        </span>
+        <span style="border:1px solid ${confidenceColor(conf)}; color:${confidenceColor(conf)}; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          ${escapeHtml(conf)} confidence
         </span>
         <span style="font-weight:600; font-size:15px; color:#111827;">${escapeHtml(finding.title)}</span>
         ${finding.affectedFunction ? `<span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">${escapeHtml(finding.affectedFunction)}</span>` : ""}
       </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>${escapeHtml(finding.detector)}</code></div>
       <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">${escapeHtml(finding.description)}</p>
       <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
         <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
