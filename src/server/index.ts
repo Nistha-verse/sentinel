@@ -4,6 +4,7 @@ import pc from "picocolors";
 
 import scanRoutes from "./routes/scan";
 import reportRoutes from "./routes/report";
+import { listReports } from "../storage/reportStore";
 
 const app = express();
 const PORT = parseInt(process.env.SENTINEL_PORT ?? "3001", 10);
@@ -26,6 +27,25 @@ app.use(express.json());
 // Health check
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", version: process.env.npm_package_version ?? "1.0.0" });
+});
+
+// History — top-level so /api/history works (not /api/report/history)
+app.get("/api/history", (_req, res) => {
+  const reports = listReports();
+  res.json(
+    reports.map((r) => ({
+      contractId: r.contractId,
+      contractName: r.contractName,
+      network: r.network,
+      riskScore: r.riskScore,
+      critical: r.critical,
+      high: r.high,
+      medium: r.medium,
+      low: r.low,
+      timestamp: r.timestamp,
+      findingsCount: r.findings.length,
+    }))
+  );
 });
 
 // Routes

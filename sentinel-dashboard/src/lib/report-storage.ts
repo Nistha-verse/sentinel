@@ -154,7 +154,7 @@ function notifyReportUpdated() {
 function toHistoryEntry(
   report: LoadedReport
 ): ScanHistoryEntry {
-  const { parsed, fileName, importedAt, reportId, walletAddress } = report;
+  const { parsed, fileName, importedAt, id: reportId, walletAddress } = report;
   const { summary } = parsed;
 
   return {

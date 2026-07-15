@@ -1,0 +1,42 @@
+{
+  "contractId": "CCWURCGGYSH6KVNBN4PZVSSG3MB6A5UTEEGHZZNL2U54OH5BVN6VCFXY",
+  "contractName": "Contract CCWURCGG",
+  "network": "testnet",
+  "wasmHash": "4a9793a8892acea91dd28d55e4aec0af47c5416bf378589d6fe0d5bc8582f20b",
+  "riskScore": 0,
+  "critical": 0,
+  "high": 0,
+  "medium": 0,
+  "low": 0,
+  "timestamp": "2026-07-14T22:25:31.484Z",
+  "scannedBy": "sentinel",
+  "findings": [
+    {
+      "detector": "metadata",
+      "title": "Contract Overview",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Total functions: 68 (1 exported, 67 internal). Imports: 14. Total instructions: 1626. Storage writers: 0, readers: 13. Functions with auth: 3.",
+      "recommendation": "Review contract structure for completeness.",
+      "evidence": "WASM size: 5282 bytes"
+    },
+    {
+      "detector": "metadata",
+      "title": "Exported Functions",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Public entrypoints (1): create_listing",
+      "recommendation": "Verify all exported functions are intentionally public.",
+      "evidence": "1 function exports"
+    },
+    {
+      "detector": "host-function",
+      "title": "Soroban Host Function Summary",
+      "severity": "info",
+      "confidence": "high",
+      "description": "Contract uses 14 Soroban host function(s) across 6 namespace(s): integer(5), auth(1), ledger(3), memory(3), value(1), buffer(1)",
+      "recommendation": "Review all host function imports for intended usage.",
+      "evidence": "i.0, i._, a.0, i.8, i.7, l.1, l.0, l._, i.6, m.9, v.g, b.j, m._, m.0"
+    }
+  ]
+}

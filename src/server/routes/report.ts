@@ -1,28 +1,9 @@
 import { Router, type Request, type Response } from "express";
-import { loadReport, listReports } from "../../storage/reportStore";
+import { loadReport } from "../../storage/reportStore";
 import { generateHtmlReport } from "../../report/htmlReport";
 import { generateDashboardReport } from "../../report/jsonReport";
 
 const router = Router();
-
-// GET /api/history — list all saved reports
-router.get("/history", (_req: Request, res: Response): void => {
-  const reports = listReports();
-  res.json(
-    reports.map((r) => ({
-      contractId: r.contractId,
-      contractName: r.contractName,
-      network: r.network,
-      riskScore: r.riskScore,
-      critical: r.critical,
-      high: r.high,
-      medium: r.medium,
-      low: r.low,
-      timestamp: r.timestamp,
-      findingsCount: r.findings.length,
-    }))
-  );
-});
 
 // GET /api/report/:id/json — dashboard-compatible JSON report
 router.get("/:id/json", (req: Request, res: Response): void => {

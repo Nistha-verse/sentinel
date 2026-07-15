@@ -20,6 +20,10 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: "Scan",
     subtitle: "Run a live security scan on any Soroban contract",
   },
+  "/history": {
+    title: "History",
+    subtitle: "All scans from CLI and dashboard — searchable and filterable",
+  },
   "/reports": {
     title: "Reports",
     subtitle: "Validation reports from Sentinel CLI",

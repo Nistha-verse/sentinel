@@ -19,7 +19,11 @@ export interface SavedReport {
   findings: Finding[];
 }
 
-const reportsDir = path.resolve(process.cwd(), "reports");
+// SENTINEL_REPORTS_DIR lets the dashboard (or any other host process whose
+// cwd differs from the repo root) point at the correct reports directory.
+const reportsDir = process.env.SENTINEL_REPORTS_DIR
+  ? path.resolve(process.env.SENTINEL_REPORTS_DIR)
+  : path.resolve(process.cwd(), "reports");
 
 function ensureReportsDirectory(): void {
   if (!fs.existsSync(reportsDir)) {
