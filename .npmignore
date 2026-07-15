@@ -1,0 +1,41 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# .npmignore — files excluded from the published npm package
+#
+# package.json "files" already acts as an allowlist (dist/, README.MD, LICENSE).
+# This file is a belt-and-suspenders denylist: if the "files" field is ever
+# removed, nothing sensitive or unnecessary still ends up in the tarball.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Source TypeScript — consumers use the compiled dist/ output
+src/
+
+# Next.js dashboard — not part of the CLI package
+sentinel-dashboard/
+
+# Rust demo contracts
+demo-contracts/
+
+# Runtime artefacts that must never be published
+reports/
+tmp/
+
+# Development and CI config
+tsconfig.json
+.env
+.env.example
+.env.local
+.gitignore
+.npmignore
+
+# Lock file — npm generates a fresh one on install
+package-lock.json
+
+# Internal planning docs
+implementation_plan.md
+ROADMAP.MD
+
+# Build cache and editor noise
+.next/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
