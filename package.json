@@ -16,9 +16,8 @@
   },
   "files": [
     "dist/",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
+    "README.MD",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18.0.0"
@@ -31,16 +30,25 @@
     "scanner",
     "audit",
     "wasm",
-    "blockchain"
+    "blockchain",
+    "cli",
+    "vulnerability"
   ],
-  "author": "",
+  "author": "Nistha Dash",
   "license": "MIT",
+  "homepage": "https://github.com/nistha-verse/sentinel#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nistha-verse/sentinel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nistha-verse/sentinel/issues"
+  },
   "type": "commonjs",
   "dependencies": {
     "@stellar/stellar-sdk": "^16.0.1",
     "@webassemblyjs/ast": "^1.14.1",
     "@webassemblyjs/wasm-parser": "^1.14.1",
-    "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
     "commander": "^15.0.0",
     "cors": "^2.8.5",
