@@ -8,6 +8,7 @@ import {
   Wallet,
   ShieldCheck,
   ScanSearch,
+  History,
   X,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -19,9 +20,10 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/scan", label: "Scan", icon: ScanSearch },
-  { href: "/reports", label: "Reports", icon: FileText },
-  { href: "/wallet", label: "Wallet", icon: Wallet },
+  { href: "/scan",      label: "Scan",      icon: ScanSearch },
+  { href: "/history",   label: "History",   icon: History },
+  { href: "/reports",   label: "Reports",   icon: FileText },
+  { href: "/wallet",    label: "Wallet",    icon: Wallet },
 ];
 
 interface SidebarProps {

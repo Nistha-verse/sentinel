@@ -27,7 +27,9 @@ export async function fetchWasmForContract(
   const server = new rpc.Server(url);
   const wasm = await server.getContractWasmByContractId(contractId);
 
-  const tmpDir = path.resolve(process.cwd(), "tmp");
+  const tmpDir = process.env.SENTINEL_TMP_DIR
+    ? path.resolve(process.env.SENTINEL_TMP_DIR)
+    : path.resolve(process.cwd(), "tmp");
   fs.mkdirSync(tmpDir, { recursive: true });
 
   const filePath = path.join(tmpDir, `${contractId}.wasm`);

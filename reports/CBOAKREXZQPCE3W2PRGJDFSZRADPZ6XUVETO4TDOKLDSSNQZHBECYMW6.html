@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Security Report — Contract CBOAKREX</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f9fafb; color:#111827; margin:0; padding:0; }
+    .container { max-width:960px; margin:0 auto; padding:32px 24px; }
+    .header { background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color:#fff; padding:32px; border-radius:12px; margin-bottom:32px; }
+    .header h1 { margin:0 0 4px 0; font-size:28px; font-weight:700; }
+    .header .subtitle { color:#94a3b8; font-size:14px; margin:0; }
+    .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
+    .meta-card { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; }
+    .meta-card .label { font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
+    .meta-card .value { font-size:16px; font-weight:600; color:#111827; font-family:monospace; word-break:break-all; }
+    .risk-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:24px; margin-bottom:32px; display:flex; align-items:center; gap:32px; }
+    .risk-score { font-size:64px; font-weight:800; color:#22c55e; line-height:1; }
+    .risk-label { font-size:14px; color:#6b7280; margin-top:4px; }
+    .risk-breakdown { display:flex; gap:24px; flex-wrap:wrap; }
+    .risk-item { text-align:center; }
+    .risk-item .count { font-size:28px; font-weight:700; }
+    .risk-item .name { font-size:12px; color:#6b7280; text-transform:uppercase; }
+    .section { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:24px; margin-bottom:24px; }
+    .footer { text-align:center; color:#9ca3af; font-size:13px; margin-top:32px; padding-top:24px; border-top:1px solid #e5e7eb; }
+    @media (max-width:600px) { .risk-card { flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🛡 Sentinel Security Report</h1>
+      <p class="subtitle">Soroban Smart Contract Security Analysis</p>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="label">Contract ID</div>
+        <div class="value" style="font-size:12px;">CBOAKREXZQPCE3W2PRGJDFSZRADPZ6XUVETO4TDOKLDSSNQZHBECYMW6</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Contract Name</div>
+        <div class="value">Contract CBOAKREX</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Network</div>
+        <div class="value">testnet</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Scan Time</div>
+        <div class="value" style="font-size:13px;">15/7/2026, 3:56:05 am</div>
+      </div>
+      <div class="meta-card"><div class="label">WASM Hash</div><div class="value" style="font-size:11px;">3a7360268ada4caf0a8a8cdc39500850b7a96ea6804235e84c2620eb78a22366</div></div>
+    </div>
+
+    <div class="risk-card">
+      <div>
+        <div class="risk-score">5</div>
+        <div class="risk-label">Risk Score / 100</div>
+      </div>
+      <div class="risk-breakdown">
+        <div class="risk-item">
+          <div class="count" style="color:#ef4444;">0</div>
+          <div class="name">Critical</div>
+        </div>
+        <div class="risk-item">
+          <div class="count" style="color:#f97316;">0</div>
+          <div class="name">High</div>
+        </div>
+        <div class="risk-item">
+          <div class="count" style="color:#eab308;">0</div>
+          <div class="name">Medium</div>
+        </div>
+        <div class="risk-item">
+          <div class="count" style="color:#3b82f6;">6</div>
+          <div class="name">Low</div>
+        </div>
+        <div class="risk-item">
+          <div class="count" style="color:#6b7280;">7</div>
+          <div class="name">Info</div>
+        </div>
+      </div>
+    </div>
+
+    
+      <div class="section">
+        <h2 style="color:#3b82f6; border-bottom:2px solid #3b82f6; padding-bottom:8px; margin-bottom:16px;">
+          Low Findings (6)
+        </h2>
+        
+    <div class="finding" style="border-left: 4px solid #3b82f6; background: #eff6ff; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#3b82f6; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          low
+        </span>
+        <span style="border:1px solid #1e40af; color:#1e40af; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          low confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Compiler Overflow Check in Exported Function</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">cancel</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>panic</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Exported function &#39;cancel&#39; contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 2 unreachable opcode(s) in &#39;cancel&#39; (index 18)</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #3b82f6; background: #eff6ff; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#3b82f6; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          low
+        </span>
+        <span style="border:1px solid #1e40af; color:#1e40af; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          low confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Compiler Overflow Check in Exported Function</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">deposit</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>panic</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Exported function &#39;deposit&#39; contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 2 unreachable opcode(s) in &#39;deposit&#39; (index 20)</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #3b82f6; background: #eff6ff; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#3b82f6; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          low
+        </span>
+        <span style="border:1px solid #1e40af; color:#1e40af; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          low confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Compiler Overflow Check in Exported Function</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">get_status</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>panic</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Exported function &#39;get_status&#39; contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 2 unreachable opcode(s) in &#39;get_status&#39; (index 21)</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #3b82f6; background: #eff6ff; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#3b82f6; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          low
+        </span>
+        <span style="border:1px solid #1e40af; color:#1e40af; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          low confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Compiler Overflow Check in Exported Function</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">initialize</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>panic</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Exported function &#39;initialize&#39; contains 1 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 1 unreachable opcode(s) in &#39;initialize&#39; (index 22)</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #3b82f6; background: #eff6ff; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#3b82f6; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          low
+        </span>
+        <span style="border:1px solid #1e40af; color:#1e40af; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          low confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Compiler Overflow Check in Exported Function</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">refund</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>panic</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Exported function &#39;refund&#39; contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 2 unreachable opcode(s) in &#39;refund&#39; (index 23)</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #3b82f6; background: #eff6ff; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#3b82f6; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          low
+        </span>
+        <span style="border:1px solid #1e40af; color:#1e40af; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          low confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Compiler Overflow Check in Exported Function</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">release</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>panic</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Exported function &#39;release&#39; contains 2 unreachable opcode(s), consistent with compiler-generated integer overflow checks. These are standard in Rust debug/release builds.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Use checked arithmetic (checked_add, checked_mul) to eliminate overflow panics if strict reliability is required.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 2 unreachable opcode(s) in &#39;release&#39; (index 24)</div>
+    </div>
+      </div>
+      <div class="section">
+        <h2 style="color:#6b7280; border-bottom:2px solid #6b7280; padding-bottom:8px; margin-bottom:16px;">
+          Info Findings (7)
+        </h2>
+        
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Contract Overview</span>
+        
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>metadata</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Total functions: 11 (6 exported, 5 internal). Imports: 15. Total instructions: 749. Storage writers: 0, readers: 6. Functions with auth: 0.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Review contract structure for completeness.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: WASM size: 2916 bytes</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Exported Functions</span>
+        
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>metadata</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Public entrypoints (6): cancel, deposit, get_status, initialize, refund, release</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Verify all exported functions are intentionally public.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: 6 function exports</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Soroban Host Function Summary</span>
+        
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>host-function</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Contract uses 15 Soroban host function(s) across 6 namespace(s): memory(3), integer(5), buffer(2), ledger(3), cross_contract(1), crypto(1)</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Review all host function imports for intended usage.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: m._, m.0, i.6, m.1, i.8, i.7, b.8, l.0, l.1, x.0, l._, i.0, i._, b.3, c._</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Cryptographic Host Functions Used</span>
+        
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>host-function</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Contract uses 1 cryptographic host function(s): c._. Verify cryptographic operations are used correctly.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Ensure hash functions are used for integrity, not as a substitute for authorization. Verify signature verification uses the correct key.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: c._</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Cross-Contract Call Detected</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">cancel</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>cross-contract</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Function &#39;cancel&#39; invokes an external contract. Verify the callee is trusted and call arguments are validated.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: invoke_contract (x.0/x.1) detected, count: 1</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Cross-Contract Call Detected</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">refund</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>cross-contract</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Function &#39;refund&#39; invokes an external contract. Verify the callee is trusted and call arguments are validated.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: invoke_contract (x.0/x.1) detected, count: 2</div>
+    </div>
+    <div class="finding" style="border-left: 4px solid #6b7280; background: #f9fafb; margin-bottom: 16px; padding: 16px; border-radius: 6px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="background:#6b7280; color:#fff; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; text-transform:uppercase;">
+          info
+        </span>
+        <span style="border:1px solid #166534; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:500; text-transform:uppercase;">
+          high confidence
+        </span>
+        <span style="font-weight:600; font-size:15px; color:#111827;">Cross-Contract Call Detected</span>
+        <span style="font-family:monospace; font-size:12px; color:#6b7280; margin-left:auto;">release</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:8px;">Detector: <code>cross-contract</code></div>
+      <p style="color:#374151; margin:0 0 8px 0; font-size:14px;">Function &#39;release&#39; invokes an external contract. Verify the callee is trusted and call arguments are validated.</p>
+      <div style="background:#fff; border:1px solid #e5e7eb; border-radius:4px; padding:10px; margin-bottom:8px;">
+        <span style="font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Recommendation</span>
+        <p style="color:#374151; margin:4px 0 0 0; font-size:13px;">Ensure cross-contract call targets are trusted. Handle failure cases from try_call appropriately.</p>
+      </div>
+      <div style="font-family:monospace; font-size:12px; color:#6b7280; background:#f3f4f6; padding:6px 10px; border-radius:4px;">Evidence: invoke_contract (x.0/x.1) detected, count: 1</div>
+    </div>
+      </div>
+
+    <div class="footer">
+      Generated by <strong>Sentinel</strong> vsentinel &bull; 15/7/2026, 3:56:05 am
+    </div>
+  </div>
+</body>
+</html>

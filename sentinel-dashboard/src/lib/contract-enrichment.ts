@@ -1,23 +1,9 @@
 import type { ScanHistoryEntry } from "@/lib/report-storage";
-import { loadStoredReport, getHealthStatus } from "@/lib/report-storage";
 import type {
   DiscoveredContract,
   EnrichedProject,
   HealthStatus,
 } from "@/lib/discovered-contract-types";
-
-function toHealthStatus(
-  errors: number,
-  warnings: number
-): { status: HealthStatus; label: string } {
-  if (errors > 0) {
-    return { status: "critical", label: "Validation failed" };
-  }
-  if (warnings > 0) {
-    return { status: "warning", label: "Review recommended" };
-  }
-  return { status: "healthy", label: "Healthy" };
-}
 
 function historyToHealth(entry: ScanHistoryEntry): {
   status: HealthStatus;
@@ -65,18 +51,10 @@ function findMatchingHistory(
 export function enrichDiscoveredContracts(
   contracts: DiscoveredContract[],
   history: ScanHistoryEntry[] = [],
-  walletAddress: string | null = null
+  _walletAddress: string | null = null
 ): EnrichedProject[] {
-  const stored = loadStoredReport(walletAddress);
-  const reportMetrics = stored?.parsed ?? null;
-
   return contracts.map((contract) => {
     const historyMatch = findMatchingHistory(contract, history);
-    const reportMatchesSingle =
-      reportMetrics &&
-      contracts.length === 1 &&
-      (historyMatch?.contractName === reportMetrics.contractName ||
-        contract.deployedByWallet);
 
     if (historyMatch) {
       const health = historyToHealth(historyMatch);
@@ -90,24 +68,11 @@ export function enrichDiscoveredContracts(
       };
     }
 
-    if (reportMatchesSingle && reportMetrics) {
-      const { summary } = reportMetrics;
-      const health = toHealthStatus(summary.errors, summary.warnings);
-      return {
-        ...contract,
-        displayName: reportMetrics.contractName || contract.displayName,
-        lastScanStatus: reportMetrics.scanTimestamp,
-        coveragePercent: reportMetrics.coveragePercent,
-        healthStatus: health.status,
-        healthLabel: getHealthStatus(summary.errors, summary.warnings),
-      };
-    }
-
     return {
       ...contract,
       lastScanStatus: null,
       coveragePercent: null,
-      healthStatus: "unknown",
+      healthStatus: "unknown" as HealthStatus,
       healthLabel: "Unscanned",
     };
   });

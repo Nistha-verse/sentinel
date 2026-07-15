@@ -17,16 +17,17 @@ import AppLayout from "@/components/layout/Applayout";
 import HealthCard from "@/components/dashboard/HealthCard";
 import WalletCard from "@/components/dashboard/WalletCard";
 import ReportsCard from "@/components/dashboard/ReportsCard";
-import TimelineCard from "@/components/dashboard/TimelineCard";
 import StatCard from "@/components/dashboard/StatCard";
 import RecentContractCard from "@/components/dashboard/RecentContractCard";
 import ProjectDiscovery from "@/components/dashboard/ProjectDiscovery";
+import RecentScans from "@/components/dashboard/RecentScans";
 import ConnectWalletButton from "@/components/wallet/ConnectWalletButton";
 import { useReportData } from "@/components/dashboard/useReportData";
 import { useWallet } from "@/context/WalletContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ReportFinding } from "@/lib/report-types";
 
 const SEVERITY_GROUPS = [
@@ -160,6 +161,18 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {!ready && !hasReport && (
+          <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="rounded-lg border border-border bg-card p-5 space-y-3">
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-8 w-2/3" />
+                <Skeleton className="h-3 w-3/4" />
+              </div>
+            ))}
+          </div>
+        )}
+
         {hasReport && stats.length > 0 && (
           <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {stats.map((stat, index) => (
@@ -246,7 +259,7 @@ export default function DashboardPage() {
             generatedAt={metrics?.scanTimestamp}
             healthScore={metrics?.healthScore}
           />
-          <TimelineCard history={history} />
+          <RecentScans limit={5} />
         </div>
 
         {showEmptyState && (

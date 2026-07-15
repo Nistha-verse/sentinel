@@ -183,7 +183,12 @@ export default function ProjectDiscovery() {
       {phase === "complete" && projects.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {projects.map((project, index) => (
-            <ProjectCard key={project.contractId} project={project} index={index} />
+            <ProjectCard
+              key={project.contractId}
+              project={project}
+              index={index}
+              onScanComplete={retry}
+            />
           ))}
         </div>
       )}
