@@ -145,8 +145,8 @@ export default function RecentScans({ limit = 6 }: RecentScansProps) {
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-label text-muted-foreground">Backend</p>
-            <h3 className="mt-1 text-base font-semibold text-foreground">Recent Scans</h3>
+            <p className="text-label text-muted-foreground">Activity</p>
+            <h3 className="mt-1 text-base font-semibold text-foreground">Recent Brews</h3>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -172,10 +172,10 @@ export default function RecentScans({ limit = 6 }: RecentScansProps) {
             </div>
           ) : recent.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-6 text-center">
-              <ShieldCheck size={24} className="text-muted-foreground/40" />
-              <p className="text-small text-muted-foreground">No scans yet.</p>
+              <span className="text-3xl">☕</span>
+              <p className="text-small text-muted-foreground">No brews yet.</p>
               <Button size="sm" variant="outline" asChild>
-                <Link href="/scan">Run first scan</Link>
+                <Link href="/scan">Brew first contract</Link>
               </Button>
             </div>
           ) : (
@@ -196,7 +196,7 @@ export default function RecentScans({ limit = 6 }: RecentScansProps) {
           <div className="mt-4 border-t border-border pt-4">
             <Button variant="ghost" size="sm" className="w-full gap-2" asChild>
               <Link href="/history">
-                View all {history.length} scans
+              View all {history.length} brews
                 <ArrowRight size={13} />
               </Link>
             </Button>

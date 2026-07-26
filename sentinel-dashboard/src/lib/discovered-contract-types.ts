@@ -14,6 +14,10 @@ export interface EnrichedProject extends DiscoveredContract {
   coveragePercent: number | null;
   healthStatus: HealthStatus;
   healthLabel: string;
+  riskScore: number | null;
+  findingsCount: number | null;
+  criticalCount: number | null;
+  warningCount: number | null;
 }
 
 export interface DiscoveryCache {

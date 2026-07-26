@@ -19,11 +19,11 @@ import WalletConnectionStatus from "@/components/wallet/WalletConnectionStatus";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/scan",      label: "Scan",      icon: ScanSearch },
-  { href: "/history",   label: "History",   icon: History },
-  { href: "/reports",   label: "Reports",   icon: FileText },
-  { href: "/wallet",    label: "Wallet",    icon: Wallet },
+  { href: "/dashboard", label: "Dashboard",      icon: LayoutDashboard },
+  { href: "/scan",      label: "Brew",            icon: ScanSearch },
+  { href: "/history",   label: "☕ Brew History", icon: History },
+  { href: "/reports",   label: "Reports",         icon: FileText },
+  { href: "/wallet",    label: "Wallet",           icon: Wallet },
 ];
 
 interface SidebarProps {

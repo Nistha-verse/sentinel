@@ -35,12 +35,22 @@ function findMatchingHistory(
 ): ScanHistoryEntry | null {
   if (history.length === 0) return null;
 
+  // 1. Try matching by contract ID (most reliable)
+  const byId = history.find(
+    (entry) =>
+      entry.contractId &&
+      entry.contractId.toLowerCase() === contract.contractId.toLowerCase()
+  );
+  if (byId) return byId;
+
+  // 2. Try matching by displayName/contractName
   const byName = history.find(
     (entry) =>
       entry.contractName.toLowerCase() === contract.displayName.toLowerCase()
   );
   if (byName) return byName;
 
+  // 3. Fall back to single contract logic if appropriate
   if (history.length === 1 && contract.deployedByWallet) {
     return history[0];
   }
@@ -65,6 +75,10 @@ export function enrichDiscoveredContracts(
         coveragePercent: historyMatch.coveragePercent,
         healthStatus: health.status,
         healthLabel: health.label,
+        riskScore: 100 - historyMatch.healthScore,
+        findingsCount: historyMatch.totalIssues,
+        criticalCount: historyMatch.criticalCount,
+        warningCount: historyMatch.warningCount,
       };
     }
 
@@ -74,6 +88,10 @@ export function enrichDiscoveredContracts(
       coveragePercent: null,
       healthStatus: "unknown" as HealthStatus,
       healthLabel: "Unscanned",
+      riskScore: null,
+      findingsCount: null,
+      criticalCount: null,
+      warningCount: null,
     };
   });
 }

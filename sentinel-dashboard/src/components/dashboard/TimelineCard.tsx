@@ -57,9 +57,9 @@ export default function TimelineCard({
         <CardContent className="p-5">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-label text-muted-foreground">History</p>
+              <p className="text-label text-muted-foreground">Activity</p>
               <h3 className="mt-1 text-base font-semibold text-foreground">
-                Recent Scans
+                Recent Brews
               </h3>
             </div>
             <div className="flex size-8 items-center justify-center rounded-md border border-border bg-muted">
@@ -106,10 +106,10 @@ export default function TimelineCard({
               <>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Activity size={14} />
-                  <span className="text-small font-medium">No scans yet</span>
+                  <span className="text-small font-medium">No brews yet</span>
                 </div>
                 <p className="mt-3 text-small leading-relaxed text-text-secondary">
-                  Import a Sentinel CLI report to build your scan timeline.
+                  Import a Sentinel CLI report to build your brew timeline.
                 </p>
               </>
             )}

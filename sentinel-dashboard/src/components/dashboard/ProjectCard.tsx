@@ -13,12 +13,15 @@ import {
   ShieldAlert,
   ShieldX,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/toast";
+import { useWallet } from "@/context/WalletContext";
+import { saveReport } from "@/lib/report-storage";
 import type { EnrichedProject } from "@/lib/discovered-contract-types";
 import { startScan, pollScan } from "@/services/scanApi";
 
@@ -54,25 +57,59 @@ function riskBadgeVariant(score: number): "critical" | "warning" | "success" | "
   return "secondary";
 }
 
+function getBrewingStatus(progress: number, phase: string): string {
+  if (phase === "done" || progress >= 100) return "✓ Brew Complete";
+  if (progress <= 25) return "☕ Grinding Beans...";
+  if (progress <= 50) return "☕ Brewing Analysis...";
+  if (progress <= 75) return "☕ Tasting Contract...";
+  return "☕ Pouring Report...";
+}
+
+function getBrewScoreLabel(score: number): { label: string; variant: "success" | "warning" | "critical" } {
+  if (score >= 80) return { label: "Burnt Roast", variant: "critical" };
+  if (score >= 60) return { label: "Dark Roast", variant: "critical" };
+  if (score >= 40) return { label: "Medium Roast", variant: "warning" };
+  if (score >= 20) return { label: "Light Roast", variant: "warning" };
+  return { label: "Freshly Brewed", variant: "success" };
+}
+
+function formatScanDate(iso: string | null) {
+  if (!iso) return "Never Brewed";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
 export default function ProjectCard({
   project,
   index = 0,
   onScanComplete,
 }: ProjectCardProps) {
+  const router = useRouter();
   const { toast } = useToast();
+  const { address } = useWallet();
   const [scanPhase, setScanPhase]   = useState<ScanPhase>("idle");
   const [scanProgress, setScanProgress] = useState(0);
-  const [riskScore, setRiskScore]   = useState<number | null>(null);
+  const [riskScore, setRiskScore]   = useState<number | null>(project.riskScore ?? null);
+  const [findingsCount, setFindingsCount] = useState<number | null>(project.findingsCount ?? null);
+  const [lastScanStatus, setLastScanStatus] = useState<string | null>(project.lastScanStatus ?? null);
 
   const handleScan = useCallback(async () => {
     setScanPhase("scanning");
     setScanProgress(5);
     setRiskScore(null);
 
+    toast({
+      variant: "info",
+      message: "Brewing started...",
+    });
+
     try {
       const { scanId } = await startScan(
         project.contractId,
-        // EnrichedProject.network is the SentinelNetwork string ("TESTNET" | "PUBLIC")
         (project.network === "PUBLIC" ? "mainnet" : "testnet") as "testnet" | "mainnet"
       );
 
@@ -85,12 +122,33 @@ export default function ProjectCard({
         if (status.status === "complete") {
           done = true;
           const score = status.result?.riskScore ?? 0;
+          const count = status.result?.findingsCount ?? 0;
           setRiskScore(score);
+          setFindingsCount(count);
+          
+          const nowStr = new Date().toISOString();
+          setLastScanStatus(nowStr);
           setScanPhase("done");
+
+          // Sync with LocalStorage reports
+          try {
+            const reportRes = await fetch(`/api/report/${project.contractId}/json`);
+            if (reportRes.ok) {
+              const rawReport = await reportRes.json();
+              rawReport.contractId = project.contractId;
+              await saveReport(`${project.displayName}.report.json`, rawReport, address);
+            }
+          } catch (saveErr) {
+            console.error("Failed to save report locally:", saveErr);
+          }
+
           toast({
             variant: "success",
-            message: "Scan complete",
-            description: `${project.displayName} — risk score ${score}/100`,
+            message: "Brew complete successfully.",
+            action: {
+              label: "View Report",
+              onClick: () => router.push(`/report/${project.contractId}`),
+            },
           });
           onScanComplete?.();
         } else if (status.status === "error") {
@@ -98,7 +156,7 @@ export default function ProjectCard({
           setScanPhase("error");
           toast({
             variant: "error",
-            message: "Scan failed",
+            message: "Brew failed",
             description: status.error ?? "An unexpected error occurred.",
           });
         }
@@ -107,22 +165,45 @@ export default function ProjectCard({
       setScanPhase("error");
       toast({
         variant: "error",
-        message: "Scan failed",
-        description: err instanceof Error ? err.message : "Failed to start scan.",
+        message: "Brew failed",
+        description: err instanceof Error ? err.message : "Failed to start brew.",
       });
     }
-  }, [project, toast, onScanComplete]);
+  }, [project, toast, address, router, onScanComplete]);
 
   const isScanning = scanPhase === "scanning";
   const showReport = scanPhase === "done" || project.lastScanStatus !== null;
+
+  const getDisplayStatus = () => {
+    if (scanPhase === "scanning") {
+      return { label: getBrewingStatus(scanProgress, scanPhase), variant: "secondary" as const };
+    }
+    if (riskScore !== null) {
+      const info = getBrewScoreLabel(riskScore);
+      return { label: info.label, variant: info.variant };
+    }
+    if (project.healthLabel === "Unscanned" || !project.lastScanStatus) {
+      return { label: "Never Brewed", variant: "secondary" as const };
+    }
+    if (project.healthStatus === "healthy") {
+      return { label: "Freshly Brewed", variant: "success" as const };
+    } else if (project.healthStatus === "warning") {
+      return { label: "Medium Roast", variant: "warning" as const };
+    } else if (project.healthStatus === "critical") {
+      return { label: "Dark Roast", variant: "critical" as const };
+    }
+    return { label: "Never Brewed", variant: "secondary" as const };
+  };
+  const currentStatus = getDisplayStatus();
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.06 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
     >
-      <Card className="h-full border-primary/15 transition-colors hover:border-primary/30">
+      <Card className="h-full border-primary/15 transition-all-300 hover:border-primary/40 hover:shadow-[0_8px_30px_rgb(28,22,18,0.55)]">
         <CardContent className="flex h-full flex-col p-5">
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
@@ -148,8 +229,8 @@ export default function ProjectCard({
               </div>
             </div>
 
-            <Badge variant={healthBadgeVariant(project.healthStatus)}>
-              {project.healthLabel}
+            <Badge variant={currentStatus.variant}>
+              {currentStatus.label}
             </Badge>
           </div>
 
@@ -162,7 +243,7 @@ export default function ProjectCard({
             {riskScore !== null && (
               <Badge variant={riskBadgeVariant(riskScore)} className="flex items-center gap-1">
                 <RiskIcon score={riskScore} />
-                Risk {riskScore}/100
+                ☕ Brew Score {riskScore}/100
               </Badge>
             )}
           </div>
@@ -172,12 +253,20 @@ export default function ProjectCard({
             <div className="flex items-center justify-between gap-3">
               <dt className="flex items-center gap-1.5 text-muted-foreground">
                 <Clock size={13} />
-                Last scan
+                ☕ Last Brewed
               </dt>
               <dd className="text-right font-medium text-foreground">
-                {project.lastScanStatus ?? "Not scanned"}
+                {lastScanStatus ? formatScanDate(lastScanStatus) : "Never Brewed"}
               </dd>
             </div>
+            {findingsCount !== null && (
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-muted-foreground">Findings</dt>
+                <dd className="font-medium text-foreground">
+                  {findingsCount} {findingsCount === 1 ? "finding" : "findings"}
+                </dd>
+              </div>
+            )}
             {project.coveragePercent !== null && (
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-muted-foreground">Coverage</dt>
@@ -200,8 +289,19 @@ export default function ProjectCard({
 
           {/* Scanning progress */}
           {isScanning && (
-            <div className="mt-4">
-              <Progress value={scanProgress} animated label="Scanning…" />
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <div className="steam-container">
+                    <span className="steam-line" />
+                    <span className="steam-line" />
+                    <span className="steam-line" />
+                  </div>
+                  {getBrewingStatus(scanProgress, scanPhase)}
+                </span>
+                <span className="font-mono text-foreground">{scanProgress}%</span>
+              </div>
+              <Progress value={scanProgress} animated={false} barClassName="bg-primary" />
             </div>
           )}
 
@@ -215,12 +315,12 @@ export default function ProjectCard({
               {isScanning ? (
                 <>
                   <Loader2 size={13} className="animate-spin" />
-                  Scanning…
+                  Brewing...
                 </>
               ) : (
                 <>
                   <ScanSearch size={13} />
-                  Scan
+                  Brew Contract
                 </>
               )}
             </Button>

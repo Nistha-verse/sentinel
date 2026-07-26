@@ -12,6 +12,10 @@ export interface Toast {
   message: string;
   description?: string;
   variant: ToastVariant;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 interface ToastContextType {
@@ -36,7 +40,7 @@ function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: () => voi
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    timerRef.current = setTimeout(onDismiss, 4500);
+    timerRef.current = setTimeout(onDismiss, 6000); // 6 seconds for actionable toasts
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [onDismiss]);
 
@@ -64,6 +68,19 @@ function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: () => voi
         <p className="text-sm font-medium text-foreground">{t.message}</p>
         {t.description && (
           <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">{t.description}</p>
+        )}
+        {t.action && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              t.action?.onClick();
+              onDismiss();
+            }}
+            className="mt-2 text-xs font-semibold text-primary hover:underline block text-left"
+          >
+            {t.action.label}
+          </button>
         )}
       </div>
       <button

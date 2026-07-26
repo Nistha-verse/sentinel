@@ -47,6 +47,7 @@ export interface ReportFinding {
 }
 
 export interface ParsedReport {
+  contractId?: string;
   contractName: string;
   scanTimestamp: string;
   coveragePercent: number | null;

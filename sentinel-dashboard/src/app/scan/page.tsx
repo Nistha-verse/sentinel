@@ -24,6 +24,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { useWallet } from "@/context/WalletContext";
+import { saveReport } from "@/lib/report-storage";
+import { useRouter } from "next/navigation";
 import {
   startScan,
   pollScan,
@@ -45,11 +48,20 @@ function validateContractId(value: string): string | null {
 
 type ScanPhase = "idle" | "scanning" | "complete" | "error";
 
-function RiskBadge({ score }: { score: number }) {
-  if (score >= 70) return <Badge variant="critical">CRITICAL — {score}/100</Badge>;
-  if (score >= 35) return <Badge variant="warning">HIGH — {score}/100</Badge>;
-  if (score >= 10) return <Badge variant="warning">MEDIUM — {score}/100</Badge>;
-  return <Badge variant="success">SAFE — {score}/100</Badge>;
+function getBrewingStatus(progress: number, phase: string): string {
+  if (phase === "complete" || progress >= 100) return "✓ Brew Complete";
+  if (progress <= 25) return "☕ Grinding Beans...";
+  if (progress <= 50) return "☕ Brewing Analysis...";
+  if (progress <= 75) return "☕ Tasting Contract...";
+  return "☕ Pouring Report...";
+}
+
+function BrewRoastBadge({ score }: { score: number }) {
+  if (score >= 80) return <Badge variant="critical">Burnt Roast — {score}/100</Badge>;
+  if (score >= 60) return <Badge variant="critical">Dark Roast — {score}/100</Badge>;
+  if (score >= 40) return <Badge variant="warning">Medium Roast — {score}/100</Badge>;
+  if (score >= 20) return <Badge variant="warning">Light Roast — {score}/100</Badge>;
+  return <Badge variant="success">Freshly Brewed — {score}/100</Badge>;
 }
 
 function FindingRow({ label, count, color }: { label: string; count: number; color: string }) {
@@ -62,11 +74,18 @@ function FindingRow({ label, count, color }: { label: string; count: number; col
 }
 
 // Animated scan-line graphic
-function ScanAnimation({ progress }: { progress: number }) {
+function ScanAnimation({ progress, phase }: { progress: number; phase: string }) {
   return (
-    <div className="relative h-24 overflow-hidden rounded-md border border-border bg-muted/20">
+    <div className="relative h-32 overflow-hidden rounded-md border border-border bg-muted/20 flex flex-col justify-center items-center">
       {/* grid lines */}
       <div className="absolute inset-0 opacity-20 pattern-grid" />
+
+      {/* steam rising when brewing */}
+      <div className="steam-container mb-1">
+        <span className="steam-line" />
+        <span className="steam-line" />
+        <span className="steam-line" />
+      </div>
 
       {/* animated scan line */}
       <motion.div
@@ -76,16 +95,18 @@ function ScanAnimation({ progress }: { progress: number }) {
       />
 
       {/* progress overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-        <Loader2 size={20} className="animate-spin text-primary" />
-        <span className="font-mono text-xs text-primary">{progress}%</span>
+      <div className="flex flex-col items-center justify-center gap-1 z-10">
+        <span className="font-mono text-lg font-bold text-primary">{progress}%</span>
+        <span className="text-xs text-muted-foreground">{getBrewingStatus(progress, phase)}</span>
       </div>
     </div>
   );
 }
 
 export default function ScanPage() {
+  const router = useRouter();
   const { toast } = useToast();
+  const { address } = useWallet();
 
   const [contractId, setContractId] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -128,6 +149,11 @@ export default function ScanPage() {
     setError(null);
     setScanResult(null);
 
+    toast({
+      variant: "info",
+      message: "Brewing started...",
+    });
+
     try {
       const { scanId } = await startScan(id, network);
 
@@ -140,33 +166,49 @@ export default function ScanPage() {
             stopPolling();
             setPhase("complete");
             const score = status.result?.riskScore ?? 0;
+
+            // Sync with LocalStorage reports
+            try {
+              const reportRes = await fetch(`/api/report/${id}/json`);
+              if (reportRes.ok) {
+                const rawReport = await reportRes.json();
+                rawReport.contractId = id;
+                await saveReport(`${id}.report.json`, rawReport, address);
+              }
+            } catch (saveErr) {
+              console.error("Failed to save report locally:", saveErr);
+            }
+
             toast({
-              variant: score >= 60 ? "error" : score >= 20 ? "warning" : "success",
-              message: "Scan complete",
-              description: `Risk score: ${score}/100 — ${status.result?.findingsCount ?? 0} findings`,
+              variant: "success",
+              message: "Brew complete successfully.",
+              action: {
+                label: "View Report",
+                onClick: () => router.push(`/report/${id}`),
+              },
             });
           } else if (status.status === "error") {
             stopPolling();
             setPhase("error");
-            const msg = status.error ?? "Scan failed";
+            const msg = status.error ?? "Brew failed";
             setError(msg);
-            toast({ variant: "error", message: "Scan failed", description: msg });
+            toast({ variant: "error", message: "Brew failed", description: msg });
           }
         } catch (pollErr) {
           stopPolling();
           setPhase("error");
           const msg = pollErr instanceof Error ? pollErr.message : "Polling failed";
           setError(msg);
-          toast({ variant: "error", message: "Scan failed", description: msg });
+          toast({ variant: "error", message: "Brew failed", description: msg });
         }
       }, 2000);
     } catch (startErr) {
       setPhase("error");
-      const msg = startErr instanceof Error ? startErr.message : "Failed to start scan";
+      const msg = startErr instanceof Error ? startErr.message : "Failed to start brew";
       setError(msg);
-      toast({ variant: "error", message: "Scan failed", description: msg });
+      toast({ variant: "error", message: "Brew failed", description: msg });
     }
-  }, [contractId, network, stopPolling, toast]);
+  }, [contractId, network, stopPolling, toast, address, router]);
 
   useEffect(() => () => stopPolling(), [stopPolling]);
 
@@ -198,7 +240,7 @@ export default function ScanPage() {
           className="mb-8"
         >
           <p className="text-label text-muted-foreground">Security</p>
-          <h1 className="mt-1 text-h2 text-foreground">Scan Contract</h1>
+          <h1 className="mt-1 text-h2 text-foreground">Brew Contract</h1>
           <p className="mt-2 text-body text-text-secondary">
             Enter a Soroban contract ID to run a full security analysis.
           </p>
@@ -320,12 +362,12 @@ export default function ScanPage() {
                         className="gap-2"
                       >
                         <Search size={14} />
-                        Scan Contract
+                        Brew Contract
                       </Button>
                     ) : phase === "scanning" ? (
                       <Button disabled className="gap-2">
                         <Loader2 size={14} className="animate-spin" />
-                        Scanning…
+                        Brewing…
                       </Button>
                     ) : (
                       <>
@@ -368,14 +410,14 @@ export default function ScanPage() {
                       <div className="mb-4 flex items-center gap-3">
                         <Loader2 size={17} className="animate-spin text-primary" />
                         <span className="font-medium text-foreground">
-                          {scanResult?.status === "running" ? "Analyzing contract…" : "Starting scan…"}
+                          {getBrewingStatus(scanProgress, phase)}
                         </span>
                         <span className="ml-auto font-mono text-sm text-muted-foreground">
                           {scanProgress}%
                         </span>
                       </div>
 
-                      <ScanAnimation progress={scanProgress} />
+                      <ScanAnimation progress={scanProgress} phase={phase} />
 
                       <div className="mt-3 h-1.5 w-full rounded-full bg-muted">
                         <motion.div
@@ -385,7 +427,7 @@ export default function ScanPage() {
                         />
                       </div>
                       <p className="mt-2 text-xs text-muted-foreground">
-                        Downloading WASM → Parsing instructions → Running 15 detectors
+                        Extracting WASM → Parsing Call Graph → Running Detectors → Pouring Roast
                       </p>
                     </CardContent>
                   </Card>
@@ -430,9 +472,9 @@ export default function ScanPage() {
                             ? <ShieldAlert size={20} className="text-warning" />
                             : <ShieldCheck size={20} className="text-success" />
                         }
-                        <span className="font-semibold text-foreground">Scan Complete</span>
+                        <span className="font-semibold text-foreground">Brew Complete</span>
                         <div className="ml-auto">
-                          <RiskBadge score={result.riskScore} />
+                          <BrewRoastBadge score={result.riskScore} />
                         </div>
                       </div>
 

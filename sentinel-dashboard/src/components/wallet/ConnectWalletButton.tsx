@@ -8,8 +8,11 @@ import { useWallet } from "@/context/WalletContext";
 import {
   connectWallet as connectFreighter,
   getWalletInfo,
+  FREIGHTER_UNAVAILABLE_MESSAGE,
 } from "@/services/freighter";
+import { shouldUseWalletConnect } from "@/services/wallet-platform";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import {
   type WalletConnectionState,
@@ -18,8 +21,7 @@ import {
   CONNECTION_STATE_LABELS,
 } from "./wallet-states";
 
-const FREIGHTER_INSTALL_URL =
-  "https://www.freighter.app/";
+const FREIGHTER_INSTALL_URL = "https://www.freighter.app/";
 
 interface ConnectWalletButtonProps {
   redirectTo?: string;
@@ -44,7 +46,9 @@ export default function ConnectWalletButton({
 }: ConnectWalletButtonProps) {
   const router = useRouter();
   const { connected, refreshWallet } = useWallet();
+  const { toast } = useToast();
   const [state, setState] = useState<WalletConnectionState>("checking");
+  const [errorText, setErrorText] = useState<string | null>(null);
 
   const refreshState = useCallback(async () => {
     const detected = await detectWalletConnectionState();
@@ -52,14 +56,20 @@ export default function ConnectWalletButton({
   }, []);
 
   useEffect(() => {
-    refreshState();
+    void refreshState();
   }, [refreshState, connected]);
 
   const handleConnect = async () => {
+    setErrorText(null);
     const current = await detectWalletConnectionState();
 
-    if (current === "not_installed") {
+    if (current === "not_installed" && !shouldUseWalletConnect()) {
       setState("not_installed");
+      toast({
+        variant: "warning",
+        message: "Freighter not detected",
+        description: FREIGHTER_UNAVAILABLE_MESSAGE,
+      });
       return;
     }
 
@@ -78,40 +88,80 @@ export default function ConnectWalletButton({
 
       if (!info) {
         setState("denied");
+        setErrorText("Connection did not complete. Try again.");
+        toast({
+          variant: "error",
+          message: "Connection failed",
+          description: "Connection did not complete. Try again.",
+        });
         return;
       }
 
       if (!isSupportedNetwork(info.network)) {
         setState("wrong_network");
+        setErrorText(CONNECTION_STATE_LABELS.wrong_network.description);
+        toast({
+          variant: "warning",
+          message: "Wrong network",
+          description: CONNECTION_STATE_LABELS.wrong_network.description,
+        });
         return;
       }
 
       setState("connected");
+      toast({
+        variant: "success",
+        message: "Wallet connected",
+        description: shouldUseWalletConnect()
+          ? "Returned from Freighter Mobile successfully."
+          : "Freighter extension connected.",
+      });
       onConnected?.();
 
       if (redirectTo) {
         router.push(redirectTo);
       }
-    } catch {
-      setState("denied");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : FREIGHTER_UNAVAILABLE_MESSAGE;
+
+      if (
+        message.includes("not detected") ||
+        message.includes("not configured") ||
+        message.includes("Install Freighter")
+      ) {
+        setState("not_installed");
+      } else {
+        setState("denied");
+      }
+
+      setErrorText(message);
+      toast({
+        variant: "error",
+        message: "Connection failed",
+        description: message,
+      });
     }
   };
 
   const isConnecting = state === "connecting" || state === "checking";
   const meta = CONNECTION_STATE_LABELS[state];
 
-  if (state === "not_installed") {
+  if (state === "not_installed" && !shouldUseWalletConnect()) {
     return (
-      <Button size={size} variant="outline" className={className} asChild>
-        <a
-          href={FREIGHTER_INSTALL_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <ExternalLink size={16} />
-          Install Freighter
-        </a>
-      </Button>
+      <div className={cn("flex flex-col gap-2", className)}>
+        <Button size={size} variant="outline" asChild>
+          <a
+            href={FREIGHTER_INSTALL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ExternalLink size={16} />
+            Install Freighter
+          </a>
+        </Button>
+        <p className="text-xs text-warning">{FREIGHTER_UNAVAILABLE_MESSAGE}</p>
+      </div>
     );
   }
 
@@ -132,7 +182,7 @@ export default function ConnectWalletButton({
     <Button
       size={size}
       variant={variant}
-      onClick={handleConnect}
+      onClick={() => void handleConnect()}
       disabled={isConnecting}
       className={inline ? className : "w-full sm:w-auto"}
     >
@@ -161,8 +211,10 @@ export default function ConnectWalletButton({
     <div className={cn("flex flex-col gap-2", className)}>
       {button}
 
-      {(state === "denied" || state === "wrong_network") && (
-        <p className="text-xs text-warning">{meta.description}</p>
+      {(state === "denied" ||
+        state === "wrong_network" ||
+        state === "not_installed") && (
+        <p className="text-xs text-warning">{errorText ?? meta.description}</p>
       )}
     </div>
   );
