@@ -22,6 +22,7 @@ export interface LoadedReport extends StoredReport {
 
 export interface ScanHistoryEntry {
   reportId: string;
+  contractId?: string;
   walletAddress: WalletAddress;
   contractName: string;
   scanTimestamp: string;
@@ -159,6 +160,7 @@ function toHistoryEntry(
 
   return {
     reportId,
+    contractId: parsed.contractId,
     walletAddress,
     contractName: parsed.contractName,
     scanTimestamp: parsed.scanTimestamp,

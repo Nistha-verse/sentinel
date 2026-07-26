@@ -77,11 +77,11 @@ function RiskShield({ score }: { score: number }) {
 }
 
 function riskLabel(score: number): { label: string; variant: "critical" | "warning" | "success" } {
-  if (score >= 80) return { label: "CRITICAL", variant: "critical" };
-  if (score >= 60) return { label: "HIGH",     variant: "critical" };
-  if (score >= 40) return { label: "MEDIUM",   variant: "warning" };
-  if (score >= 20) return { label: "LOW",      variant: "warning" };
-  return                  { label: "SAFE",     variant: "success" };
+  if (score >= 80) return { label: "Burnt Roast", variant: "critical" };
+  if (score >= 60) return { label: "Dark Roast", variant: "critical" };
+  if (score >= 40) return { label: "Medium Roast", variant: "warning" };
+  if (score >= 20) return { label: "Light Roast", variant: "warning" };
+  return                  { label: "Freshly Brewed", variant: "success" };
 }
 
 const SEVERITY_ORDER: Severity[] = ["critical", "high", "medium", "low", "info"];
@@ -387,7 +387,7 @@ export default function ReportDetailPage() {
                     ? <Loader2 size={13} className="animate-spin" />
                     : <RefreshCw size={13} />
                   }
-                  {scanning ? "Scanning…" : "Re-scan"}
+                  {scanning ? "Brewing…" : "Re-brew"}
                 </Button>
                 <Button size="sm" onClick={handleDownload} className="gap-2">
                   <Download size={13} />
@@ -403,7 +403,7 @@ export default function ReportDetailPage() {
                   <div className="flex items-center gap-4">
                     <RiskShield score={report.riskScore} />
                     <div>
-                      <p className="text-label text-muted-foreground">Risk Score</p>
+                      <p className="text-label text-muted-foreground">☕ Brew Score</p>
                       <div className="flex items-baseline gap-1">
                         <span className="text-4xl font-semibold text-foreground tabular-nums">
                           <CountUp value={report.riskScore} />

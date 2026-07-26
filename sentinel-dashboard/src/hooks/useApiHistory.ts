@@ -31,6 +31,7 @@ export function useApiHistory({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const refresh = useCallback(async () => {
+    setLoading(true);
     try {
       const data = await fetchHistory();
       setHistory(data);
@@ -56,6 +57,18 @@ export function useApiHistory({
       }
     };
   }, [refresh, pollingInterval]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleUpdate = () => {
+        void refresh();
+      };
+      window.addEventListener("sentinel-report-updated", handleUpdate);
+      return () => {
+        window.removeEventListener("sentinel-report-updated", handleUpdate);
+      };
+    }
+  }, [refresh]);
 
   return { history, loading, error, refresh };
 }

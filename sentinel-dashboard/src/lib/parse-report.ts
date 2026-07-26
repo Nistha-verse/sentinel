@@ -152,8 +152,10 @@ export function parseReportJson(raw: unknown): ParsedReport {
   }
 
   const { project } = raw;
+  const contractId = (raw as any).contractId || (project as any).contractId;
 
   return {
+    contractId: typeof contractId === "string" ? contractId : undefined,
     contractName: project.name,
     scanTimestamp: formatScanTimestamp(project.scanDate, project.scanTime),
     coveragePercent: computeCoverage(project.sections),

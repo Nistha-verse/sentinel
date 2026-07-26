@@ -6,31 +6,44 @@ export const runtime = "nodejs";
 /**
  * GET /api/report/:contractId/html
  * Returns the full self-contained HTML security report.
+ *
+ * Add ?download=1 to trigger a browser file download instead of inline display.
  */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ contractId: string }> }
 ) {
-  const { contractId } = await params;
+  try {
+    const { contractId } = await params;
 
-  if (!contractId) {
-    return NextResponse.json({ error: "contractId is required" }, { status: 400 });
+    if (!contractId) {
+      return NextResponse.json({ error: "contractId is required" }, { status: 400 });
+    }
+
+    const report = loadReport(contractId);
+
+    if (!report) {
+      return new NextResponse(
+        `Report not found for contract ${contractId}`,
+        { status: 404 }
+      );
+    }
+
+    const html = generateHtmlReport(report);
+    const download = req.nextUrl.searchParams.get("download") === "1";
+
+    return new NextResponse(html, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
+        ...(download
+          ? { "Content-Disposition": `attachment; filename="${contractId}.html"` }
+          : {}),
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return new NextResponse(`Error generating report: ${message}`, { status: 500 });
   }
-
-  const report = loadReport(contractId);
-
-  if (!report) {
-    return new NextResponse("Report not found", { status: 404 });
-  }
-
-  const html = generateHtmlReport(report);
-
-  return new NextResponse(html, {
-    status: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      // Prevent the browser from treating the report HTML as an XSS vector
-      "X-Content-Type-Options": "nosniff",
-    },
-  });
 }

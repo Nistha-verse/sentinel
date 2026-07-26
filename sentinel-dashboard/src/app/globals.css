@@ -201,3 +201,66 @@ h3,
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* Steam Animation */
+@keyframes steam {
+  0% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.65;
+  }
+  50% {
+    transform: translateY(-16px) scaleX(1.2) scaleY(0.9);
+    opacity: 0.4;
+  }
+  95% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(-32px) scaleX(0.8) scaleY(1.1);
+    opacity: 0;
+  }
+}
+
+.steam-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 28px;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.steam-line {
+  width: 1.5px;
+  height: 18px;
+  background: linear-gradient(to top, var(--primary), rgba(245, 242, 236, 0.05));
+  border-radius: 50%;
+  animation: steam 2s infinite ease-in-out;
+  transform-origin: bottom center;
+  filter: blur(0.5px);
+}
+
+.steam-line:nth-child(1) {
+  animation-delay: 0.1s;
+  animation-duration: 2.2s;
+}
+
+.steam-line:nth-child(2) {
+  animation-delay: 0.4s;
+  animation-duration: 1.8s;
+  height: 22px;
+}
+
+.steam-line:nth-child(3) {
+  animation-delay: 0.7s;
+  animation-duration: 2.5s;
+}
+
+/* Smooth Transitions */
+.transition-all-300 {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+

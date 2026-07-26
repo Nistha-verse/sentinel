@@ -32,10 +32,15 @@ export interface ScanJob {
     low: number;
     findingsCount: number;
     reportPath: string;
+    htmlPath?: string;
   };
 }
 
-const tmpDir = path.resolve(process.cwd(), "tmp");
+// Honor SENTINEL_TMP_DIR env var if set; otherwise default to <cwd>/tmp
+const tmpDir = process.env.SENTINEL_TMP_DIR
+  ? path.resolve(process.env.SENTINEL_TMP_DIR)
+  : path.resolve(process.cwd(), "tmp");
+
 
 function jobPath(id: string): string {
   return path.join(tmpDir, `${id}.job.json`);

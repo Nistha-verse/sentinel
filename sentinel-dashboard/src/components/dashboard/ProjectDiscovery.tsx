@@ -166,7 +166,7 @@ export default function ProjectDiscovery() {
                   />
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      No Soroban contracts found for this wallet
+                      No contracts discovered yet.
                     </p>
                     <p className="mt-1 text-small text-text-secondary">
                       Deploy or invoke a Soroban contract from this wallet, or
@@ -187,7 +187,6 @@ export default function ProjectDiscovery() {
               key={project.contractId}
               project={project}
               index={index}
-              onScanComplete={retry}
             />
           ))}
         </div>

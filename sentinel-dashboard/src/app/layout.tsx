@@ -29,9 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
-        <WalletProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </WalletProvider>
+        <ToastProvider>
+          <WalletProvider>{children}</WalletProvider>
+        </ToastProvider>
       </body>
     </html>
   );

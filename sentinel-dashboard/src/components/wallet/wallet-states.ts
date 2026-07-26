@@ -47,14 +47,18 @@ export const CONNECTION_STATE_LABELS: Record<
   WalletConnectionState,
   { label: string; description: string }
 > = {
-  idle: { label: "Ready", description: "Click to connect your Freighter wallet." },
+  idle: {
+    label: "Ready",
+    description: "Click to connect your Freighter wallet.",
+  },
   checking: {
     label: "Checking",
-    description: "Verifying Freighter extension status…",
+    description: "Verifying Freighter availability…",
   },
   not_installed: {
     label: "Not installed",
-    description: "Install the Freighter browser extension to continue.",
+    description:
+      "Freighter not detected. Install Freighter or open using the Freighter mobile app.",
   },
   connecting: {
     label: "Connecting",

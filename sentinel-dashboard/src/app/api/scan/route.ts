@@ -26,31 +26,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "contractId is required" }, { status: 400 });
   }
 
-  const net = network === "mainnet" ? "mainnet" : "testnet";
-  const job = createJob(contractId.trim(), net);
+  try {
+    const net = network === "mainnet" ? "mainnet" : "testnet";
+    const job = createJob(contractId.trim(), net);
 
-  // Fire-and-forget: run the actual scan pipeline in the background.
-  // The job file is updated at each stage so polling can track progress.
-  void runScanBackground(job);
+    // Fire-and-forget: run the actual scan pipeline in the background.
+    // The job file is updated at each stage so polling can track progress.
+    void runScanBackground(job);
 
-  return NextResponse.json(
-    {
-      scanId: job.id,
-      status: job.status,
-      message: "Scan started. Poll GET /api/scan/" + job.id + " for status.",
-    },
-    { status: 202 }
-  );
+    return NextResponse.json(
+      {
+        scanId: job.id,
+        status: job.status,
+        message: "Scan started. Poll GET /api/scan/" + job.id + " for status.",
+      },
+      { status: 202 }
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to start scan";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 async function runScanBackground(job: ScanJob): Promise<void> {
   try {
-    // Mark running + 10 %
+    // Mark running + 10%
     job.status = "running";
     job.progress = 10;
     writeJob(job);
 
-    // 30 % — about to hit the network
+    // 30% — about to hit the network
     job.progress = 30;
     writeJob(job);
 
@@ -70,6 +75,7 @@ async function runScanBackground(job: ScanJob): Promise<void> {
       low:          result.report.low,
       findingsCount: result.report.findings.length,
       reportPath:   result.reportPath,
+      htmlPath:     result.htmlPath,
     };
     writeJob(job);
   } catch (err) {

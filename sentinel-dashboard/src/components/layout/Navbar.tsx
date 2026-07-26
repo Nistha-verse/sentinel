@@ -17,12 +17,12 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     subtitle: "Monitor contract security across your deployments",
   },
   "/scan": {
-    title: "Scan",
-    subtitle: "Run a live security scan on any Soroban contract",
+    title: "Brew Contract",
+    subtitle: "Run a full security analysis on any Soroban contract",
   },
   "/history": {
-    title: "History",
-    subtitle: "All scans from CLI and dashboard — searchable and filterable",
+    title: "☕ Brew History",
+    subtitle: "All brews from CLI and dashboard — searchable and filterable",
   },
   "/reports": {
     title: "Reports",
