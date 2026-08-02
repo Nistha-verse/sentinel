@@ -57,13 +57,8 @@ if (!existsSync(join(repoRoot, "package.json"))) {
   process.exit(1);
 }
 
-if (!existsSync(join(repoRoot, "node_modules"))) {
-  console.log("[build-scanner] Installing CLI package dependencies...");
-  run(npmCmd, ["install"], repoRoot);
-}
-
-console.log("[build-scanner] Compiling CLI TypeScript → dist/...");
-run(npmCmd, ["run", "build"], repoRoot);
+console.log("[build-scanner] Installing CLI package dependencies...");
+run(npmCmd, ["ci"], repoRoot);
 
 if (!existsSync(distSrc)) {
   console.error("[build-scanner] Expected dist/ at", distSrc);
