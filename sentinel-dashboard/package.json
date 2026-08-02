@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build:scanner": "node scripts/build-scanner.mjs",
+    "predev": "node scripts/build-scanner.mjs --if-needed",
     "dev": "next dev",
+    "prebuild": "npm run build:scanner",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

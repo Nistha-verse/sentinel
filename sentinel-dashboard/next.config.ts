@@ -1,26 +1,29 @@
 import type { NextConfig } from "next";
 import path from "path";
 
-const repoRoot = path.resolve(__dirname, "..");
-const sentinelSrc = path.resolve(repoRoot, "src");
-
 const nextConfig: NextConfig = {
   reactCompiler: true,
 
   /**
-   * Workspace root is the monorepo root so Turbopack can resolve and
-   * transpile `@sentinel/*` imports that live outside sentinel-dashboard/.
+   * Pin Turbopack to the dashboard package so the parent CLI's
+   * `"type": "commonjs"` package.json is not applied to this app.
    */
   turbopack: {
-    root: repoRoot,
-    resolveAlias: {
-      "@sentinel": sentinelSrc,
-    },
+    root: path.resolve(__dirname),
   },
 
   /**
-   * Do NOT bundle these packages — they must be required at runtime from
-   * node_modules. Bundling them can fail or break native / CJS edge cases.
+   * Include the child-process bridge and prebuilt CLI in serverless traces.
+   */
+  outputFileTracingIncludes: {
+    "/api/**/*": [
+      "./scripts/scanner-bridge.cjs",
+      "./.sentinel-dist/**/*",
+    ],
+  },
+
+  /**
+   * Leave these as Node requires — pulled in by the prebuilt CLI at runtime.
    */
   serverExternalPackages: [
     "@stellar/stellar-sdk",

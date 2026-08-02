@@ -20,7 +20,7 @@ export async function GET(
       return NextResponse.json({ error: "contractId is required" }, { status: 400 });
     }
 
-    const report = loadReport(contractId);
+    const report = await loadReport(contractId);
 
     if (!report) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function GET(
       );
     }
 
-    const dashboardReport = generateDashboardReport(report);
+    const dashboardReport = await generateDashboardReport(report);
     const json = JSON.stringify(dashboardReport, null, 2);
 
     const download = req.nextUrl.searchParams.get("download") === "1";

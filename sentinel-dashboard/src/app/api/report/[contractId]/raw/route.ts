@@ -20,7 +20,7 @@ export async function GET(
       return NextResponse.json({ error: "contractId is required" }, { status: 400 });
     }
 
-    const report = loadReport(contractId);
+    const report = await loadReport(contractId);
 
     if (!report) {
       return NextResponse.json(

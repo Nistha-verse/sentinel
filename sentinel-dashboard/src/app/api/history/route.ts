@@ -7,8 +7,8 @@ export const runtime = "nodejs";
  * GET /api/history
  * Returns all saved reports sorted newest-first — unified view of CLI + dashboard scans.
  */
-export function GET() {
-  const reports = listReports();
+export async function GET() {
+  const reports = await listReports();
 
   return NextResponse.json(
     reports.map((r) => ({
