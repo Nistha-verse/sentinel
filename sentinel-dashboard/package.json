@@ -13,6 +13,8 @@
     "@stellar/freighter-api": "^6.0.1",
     "@stellar/stellar-sdk": "^16.0.1",
     "@walletconnect/universal-provider": "^2.23.10",
+    "@webassemblyjs/ast": "^1.14.1",
+    "@webassemblyjs/wasm-parser": "^1.14.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",

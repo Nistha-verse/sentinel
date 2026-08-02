@@ -1,24 +1,26 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+const repoRoot = path.resolve(__dirname, "..");
+const sentinelSrc = path.resolve(repoRoot, "src");
+
 const nextConfig: NextConfig = {
   reactCompiler: true,
 
   /**
-   * Explicitly set the Turbopack workspace root to the repo root (one level
-   * above sentinel-dashboard/).  This ensures that relative require() paths
-   * like "../../../../dist/..." in route handlers resolve correctly when
-   * Turbopack traces modules during the build.
+   * Workspace root is the monorepo root so Turbopack can resolve and
+   * transpile `@sentinel/*` imports that live outside sentinel-dashboard/.
    */
   turbopack: {
-    root: path.resolve(__dirname, ".."),
+    root: repoRoot,
+    resolveAlias: {
+      "@sentinel": sentinelSrc,
+    },
   },
 
   /**
    * Do NOT bundle these packages — they must be required at runtime from
-   * node_modules.  The CLI compiled output (dist/) references them as
-   * CommonJS requires, and they live in the repo-root node_modules.
-   * Bundling them would either fail (missing packages) or break native code.
+   * node_modules. Bundling them can fail or break native / CJS edge cases.
    */
   serverExternalPackages: [
     "@stellar/stellar-sdk",
@@ -32,9 +34,6 @@ const nextConfig: NextConfig = {
     "@webassemblyjs/helper-numbers",
     "@webassemblyjs/wasm-gen",
     "@webassemblyjs/wasm-edit",
-    "picocolors",
-    // The compiled CLI modules themselves — never bundle them
-    "sentinel-soroban",
   ],
 };
 
